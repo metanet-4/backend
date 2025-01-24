@@ -146,4 +146,8 @@ metanet4/.project
 # JDT-specific (Eclipse Java Development Tools)
 metanet4/.classpath
 
-# End of https://www.toptal.com/developers/gitignore/api/eclipse,java,maven
+# Ignore application.properties
+metanet4/src/main/resources/application.properties
+
+.DS_Store
+Metanet4/.DS_Store
