@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  oracledb:
+    image: jinkyoungheo/oracle-xe:21c
+    container_name: oracledb
+    environment:
+      ORACLE_PASSWORD: 1234
+    ports:
+      - "1521:1521"
+    volumes:
+      - oradata:/opt/oracle/oradata
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: backend
+    depends_on:
+      - oracledb
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  oradata:
