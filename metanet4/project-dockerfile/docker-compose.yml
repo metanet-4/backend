@@ -1,26 +1,15 @@
 version: '3.8'
 
 services:
-  apache2:
-    build:
-      context: ./Apache
-      dockerfile: Dockerfile
-    container_name: apache2
-    ports:
-      - "80:80"
-    networks:
-      - app-network
-
   oracledb:
-    platform: linux/amd64
-    build:
-      context: ./Oracle
-      dockerfile: Dockerfile
+    image: jinkyoungheo/oracle-xe:21c
     container_name: oracledb
     environment:
-      ORACLE_PASSWORD: oracle
+      ORACLE_PASSWORD: 1234
     ports:
       - "1521:1521"
+    volumes:
+      - oradata:/opt/oracle/oradata
     networks:
       - app-network
 
@@ -39,3 +28,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  oradata:
