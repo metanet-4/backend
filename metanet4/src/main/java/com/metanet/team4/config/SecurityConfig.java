@@ -28,7 +28,8 @@ public class SecurityConfig {
 				.requestMatchers("/**").hasRole("ADMIN")
 				.requestMatchers("/**").hasAnyRole("USER","ADMIN")
 				.requestMatchers("/**", "/css/**", "/js/**", "/images/**").permitAll()
-				.requestMatchers("/member/insert", "/member/login").permitAll());
+				.requestMatchers("/member/insert", "/member/login").permitAll()
+				.requestMatchers("/health").permitAll());
 		
 		http.sessionManagement((session) -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
