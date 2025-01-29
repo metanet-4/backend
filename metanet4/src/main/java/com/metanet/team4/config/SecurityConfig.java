@@ -23,7 +23,7 @@ public class SecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		http.csrf((config) -> config.disable());
 		
-	      
+    
         http.authorizeHttpRequests((req) -> req
                 .requestMatchers("/health").permitAll()
                 .requestMatchers("/member/insert", "/member/login").permitAll()

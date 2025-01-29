@@ -15,8 +15,8 @@ services:
 
   backend:
     build:
-      context: ./Backend
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: project-dockerfile/Backend/Dockerfile
     container_name: backend
     depends_on:
       - oracledb
