@@ -20,6 +20,12 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
       - name: Build and push Docker image
         run: |
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest metanet4/project-dockerfile/Backend/
