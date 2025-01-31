@@ -2,10 +2,11 @@ version: '3.8'
 
 services:
   oracledb:
-    image: jinkyoungheo/oracle-xe:21c
+    image: jinkyoungheo/oracle-xe:11g
     container_name: oracledb
     environment:
-      ORACLE_PASSWORD: 1234
+      ORACLE_PASSWORD: 1234  # SYS, SYSTEM 계정 비밀번호
+      ORACLE_ALLOW_REMOTE: true
     ports:
       - "1521:1521"
     volumes:
@@ -14,12 +15,14 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ../
-      dockerfile: project-dockerfile/Backend/Dockerfile
+    image: ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
     container_name: backend
     depends_on:
       - oracledb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracledb:1521:xe
+      SPRING_DATASOURCE_USERNAME: hr
+      SPRING_DATASOURCE_PASSWORD: hr
     ports:
       - "8080:8080"
     networks:
