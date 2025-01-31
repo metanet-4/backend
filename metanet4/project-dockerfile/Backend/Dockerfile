@@ -1,10 +1,11 @@
 # 1단계: Maven을 사용해 Spring Boot 애플리케이션 빌드
 FROM maven:3.9.4-eclipse-temurin-21 AS builder
 
-# 프로젝트 루트 경로 복사
+# 프로젝트 루트 경로 설정
 WORKDIR /app
-COPY ./pom.xml ./ 
-COPY ./src ./src
+
+# metanet4 프로젝트 전체 복사
+COPY ../../metanet4/ .
 
 # 빌드 실행 (테스트는 건너뜀)
 RUN mvn clean package -DskipTests
@@ -23,3 +24,4 @@ EXPOSE 8080
 
 # Tomcat 실행
 CMD ["catalina.sh", "run"]
+
