@@ -115,6 +115,44 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<!-- jacoco 테스트 커버리지 검사 -->
+			<plugin>
+	            <groupId>org.jacoco</groupId>
+	            <artifactId>jacoco-maven-plugin</artifactId>
+	            <version>0.8.10</version>
+	            <executions>
+	                <!-- 테스트 실행 시 JaCoCo 활성화 -->
+	                <execution>
+	                    <id>prepare-agent</id>
+	                    <goals>
+	                        <goal>prepare-agent</goal>
+	                    </goals>
+	                </execution>
+	
+	                <!-- HTML 리포트 생성 및 특정 패키지 제외 -->
+	                <execution>
+	                    <id>report</id>
+	                    <phase>verify</phase>
+	                    <goals>
+	                        <goal>report</goal>
+	                    </goals>
+	                    <configuration>
+	                        <reports>
+	                            <report>
+	                                <formats>
+	                                    <format>HTML</format>
+	                                </formats>
+	                                <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
+	                            </report>
+	                        </reports>
+	                        <excludes>
+	                            <exclude>**/dao/**</exclude>
+	                            <exclude>**/model/**</exclude>
+	                        </excludes>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>
 		</plugins>
 	</build>
 
