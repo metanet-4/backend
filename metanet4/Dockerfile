@@ -5,7 +5,7 @@ FROM maven:3.9.4-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 # metanet4 프로젝트 전체 복사
-COPY ../../metanet4/ .
+COPY ./ .
 
 # 빌드 실행 (테스트는 건너뜀)
 RUN mvn clean package -DskipTests
