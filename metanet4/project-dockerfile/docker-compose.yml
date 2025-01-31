@@ -15,7 +15,7 @@ services:
       - app-network
 
   backend:
-    image: ${{ DOCKER_HUB_USERNAME }}/my-backend:latest
+    image: ${DOCKER_HUB_USERNAME}/my-backend:latest
     container_name: backend
     depends_on:
       - oracledb
