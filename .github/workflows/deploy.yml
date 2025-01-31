@@ -43,6 +43,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+      	    export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             cd ~/app/metanet4/project-dockerfile/
             docker-compose down
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
