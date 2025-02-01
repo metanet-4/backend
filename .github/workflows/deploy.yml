@@ -46,6 +46,7 @@ jobs:
           script: |
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             cd ~/app/metanet4/project-dockerfile/
+            git pull origin dev
             docker-compose down
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
             docker-compose up -d
