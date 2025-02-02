@@ -1,4 +1,4 @@
-name: Deploy Backend
+name: CD - Deploy Backend
 
 on:
   push:
@@ -21,13 +21,26 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Create application.properties
+        run: |
+          echo -e "$APPLICATION_PROPERTIES" > metanet4/src/main/resources/application.properties
+        env:
+          APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
+
+
+      - name: Run tests
+        run: mvn test
+        working-directory: ./metanet4  
+
       - name: Log in to Docker Hub
+        if: success()
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push Docker image
+        if: success()
         run: |
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest metanet4/
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
@@ -46,8 +59,8 @@ jobs:
           script: |
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             cd ~/app/metanet4/project-dockerfile/
+            echo -e "${{ secrets.APPLICATION_PROPERTIES }}" > ~/app/metanet4/project-dockerfile/application.properties
             git pull origin dev
             docker-compose down
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
             docker-compose up -d
-
