@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: maven
-          
+
       - name: Create application.properties
         run: |
           echo -e "$APPLICATION_PROPERTIES" > metanet4/src/main/resources/application.properties
@@ -59,6 +59,7 @@ jobs:
           script: |
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             cd ~/app/metanet4/project-dockerfile/
+            echo -e "${{ secrets.APPLICATION_PROPERTIES }}" > ~/app/metanet4/project-dockerfile/application.properties
             git pull origin dev
             docker-compose down
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
