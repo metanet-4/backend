@@ -19,6 +19,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: maven
+          
+      - name: Create application.properties
+        run: |
+          echo -e "$APPLICATION_PROPERTIES" > metanet4/src/main/resources/application.properties
+        env:
+          APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
+
 
       - name: Create application.properties
         run: |
