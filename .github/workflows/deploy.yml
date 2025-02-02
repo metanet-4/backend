@@ -23,6 +23,7 @@ jobs:
 
       - name: Run tests
         run: mvn test
+        working-directory: ./metanet4  
 
       - name: Log in to Docker Hub
         if: success()
