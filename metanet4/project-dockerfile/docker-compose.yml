@@ -1,18 +1,24 @@
 version: '3.8'
 
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24 
+
 services:
   oracledb:
     image: jinkyoungheo/oracle-xe:11g
     container_name: oracledb
     environment:
-      ORACLE_PASSWORD: 1234  # SYS, SYSTEM 계정 비밀번호
+      ORACLE_PASSWORD: 1234
       ORACLE_ALLOW_REMOTE: true
     ports:
       - "1521:1521"
-    volumes:
-      - oradata:/opt/oracle/oradata
     networks:
-      - app-network
+      app-network:
+        ipv4_address: 192.168.100.100
 
   backend:
     image: ${DOCKER_HUB_USERNAME}/my-backend:latest
@@ -20,17 +26,10 @@ services:
     depends_on:
       - oracledb
     environment:
-      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracledb:1521:xe
+      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@192.168.100.100:1521:xe
       SPRING_DATASOURCE_USERNAME: hr
       SPRING_DATASOURCE_PASSWORD: hr
     ports:
       - "8080:8080"
     networks:
       - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  oradata:
