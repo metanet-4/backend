@@ -40,4 +40,20 @@ public class HealthCheckController {
 
         return ResponseEntity.ok(healthStatus);
     }
+    
+    @GetMapping("/db")
+    public ResponseEntity<Map<String, String>> healthDBCheck() {
+        Map<String, String> healthStatus = new HashMap<>();
+        healthStatus.put("status", "healthy");
+
+        try {
+            int employeeCount = healthCheckMapper.getEmployeeCount();
+            healthStatus.put("database", "connected");
+            healthStatus.put("employee_count", String.valueOf(employeeCount));
+        } catch (Exception e) {
+            healthStatus.put("database", "error");
+        }
+
+        return ResponseEntity.ok(healthStatus);
+    }
 }

@@ -14,7 +14,8 @@ services:
     ports:
       - "1521:1521"
     networks:
-      - app-network
+      app-network:
+        ipv4_address: 192.168.100.100
 
   backend:
     #image: kokomong2docker/my-backend:latest
@@ -24,8 +25,8 @@ services:
     container_name: backend
     depends_on:
       - oracledb
+
     ports:
       - "8080:8080"
     networks:
       - app-network
-      
