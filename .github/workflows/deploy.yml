@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -26,7 +25,6 @@ jobs:
           echo -e "$APPLICATION_PROPERTIES" > metanet4/src/main/resources/application.properties
         env:
           APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
-
 
       - name: Run tests
         run: mvn test
@@ -48,7 +46,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: SSH into server and deploy
         uses: appleboy/ssh-action@v0.1.10
@@ -59,8 +56,17 @@ jobs:
           script: |
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
             cd ~/app/metanet4/project-dockerfile/
-            echo -e "${{ secrets.APPLICATION_PROPERTIES }}" > ~/app/metanet4/project-dockerfile/application.properties
+
+            echo -e "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
+
             git pull origin dev
-            docker-compose down
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-backend:latest
-            docker-compose up -d
+
+            docker stop my-backend || true
+            docker rm my-backend || true
+
+            docker pull $DOCKER_HUB_USERNAME/my-backend:latest
+
+            docker run -d --name my-backend \
+              -p 8080:8080 \
+              -v $(pwd)/application.properties:/app/application.properties \
+              $DOCKER_HUB_USERNAME/my-backend:latest

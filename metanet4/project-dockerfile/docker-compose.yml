@@ -3,9 +3,6 @@ version: '3.8'
 networks:
   app-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.100.0/24 
 
 services:
   oracledb:
@@ -17,19 +14,18 @@ services:
     ports:
       - "1521:1521"
     networks:
-      app-network:
-        ipv4_address: 192.168.100.100
+      - app-network
 
   backend:
-    image: ${DOCKER_HUB_USERNAME}/my-backend:latest
+    #image: kokomong2docker/my-backend:latest
+    build:
+      context: ../
+      dockerfile: Dockerfile
     container_name: backend
     depends_on:
       - oracledb
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@192.168.100.100:1521:xe
-      SPRING_DATASOURCE_USERNAME: hr
-      SPRING_DATASOURCE_PASSWORD: hr
     ports:
       - "8080:8080"
     networks:
       - app-network
+      

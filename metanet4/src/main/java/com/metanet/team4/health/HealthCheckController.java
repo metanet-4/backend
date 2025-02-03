@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/health")
 public class HealthCheckController {
 	
-    private final HealthCheckMapper healthCheckMapper;
+    private final IHealthCheckRepository healthCheckMapper;
 
-    public HealthCheckController(HealthCheckMapper healthCheckMapper) {
+    public HealthCheckController(IHealthCheckRepository healthCheckMapper) {
         this.healthCheckMapper = healthCheckMapper;
     }
 
@@ -22,7 +22,6 @@ public class HealthCheckController {
     public ResponseEntity<Map<String, String>> healthCheck() {
         Map<String, String> healthStatus = new HashMap<>();
         healthStatus.put("status", "healthy");
-        healthStatus.put("database", "connected"); // 데이터베이스 상태 추가
         return ResponseEntity.ok(healthStatus);
     }
     
