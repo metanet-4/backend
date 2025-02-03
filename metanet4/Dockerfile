@@ -1,5 +1,5 @@
 # 1단계: Maven을 사용해 Spring Boot 애플리케이션 빌드
-FROM maven:3.9.4-eclipse-temurin-21 AS builder
+FROM maven:3.9.4-eclipse-temurin-17 AS builder
 
 # 프로젝트 루트 경로 설정
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY ./ .
 RUN mvn clean package -DskipTests
 
 # 2단계: Tomcat 기반 이미지
-FROM tomcat:10.1-jdk21
+FROM tomcat:10.1-jdk17
 
 # 기존 ROOT.war 제거
 RUN rm -rf /usr/local/tomcat/webapps/ROOT*

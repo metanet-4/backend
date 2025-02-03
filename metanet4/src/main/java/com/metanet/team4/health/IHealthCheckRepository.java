@@ -2,10 +2,11 @@ package com.metanet.team4.health;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 
+@Repository
 @Mapper
-public interface HealthCheckMapper {
+public interface IHealthCheckRepository {
     
-	@Select("SELECT COUNT(*) FROM employees")
     int getEmployeeCount();
 }
