@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내 정보</title>
+</head>
+<body>
+    <div th:replace="~{navbar}"></div>
+
+    <h1>내 정보</h1>
+    <p>아이디: <span th:text="${member.userid}">UserID</span></p>
+    <p>이름: <span th:text="${member.name}">이름</span></p>
+    <p>이메일: <span th:text="${member.email}">이메일</span></p>
+
+    <h2>회원 탈퇴</h2>
+    <button onclick="deleteUser()">회원 탈퇴</button>
+
+    <script>
+        function deleteUser() {
+            if (!confirm("정말 회원 탈퇴를 진행하시겠습니까?")) return;
+
+            fetch("/user/delete", {
+                method: "DELETE",
+                credentials: "include"
+            })
+            .then(() => {
+                alert("회원 탈퇴가 완료되었습니다.");
+                localStorage.removeItem("accessToken");
+                window.location.href = "/";
+            })
+            .catch(error => alert("회원 탈퇴 실패: " + error.message));
+        }
+    </script>
+</body>
+</html>
