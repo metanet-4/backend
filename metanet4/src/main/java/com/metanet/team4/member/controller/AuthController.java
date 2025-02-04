@@ -4,12 +4,11 @@ import java.util.Map;
 import java.util.Arrays;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.dto.LoginRequest;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.member.service.MemberService;
-
+import com.metanet.team4.member.service.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,9 +21,10 @@ public class AuthController {
 
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
+    private final RedisService redisService;
 
     /**
-     * ✅ 로그인 (Access Token + Refresh Token 발급 및 쿠키 저장)
+     * ✅ 로그인 (Access Token + Refresh Token 발급)
      */
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
@@ -36,7 +36,7 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("error", "아이디 또는 비밀번호가 잘못되었습니다."));
         }
 
-        // ✅ 역할 기본값 설정 (null 방지)
+        // ✅ 역할(role) 기본값 설정
         String role = (member.getRole() == null || member.getRole().isEmpty()) ? "ROLE_USER" : member.getRole();
         System.out.println("🟢 [로그인 성공] 사용자 ID: " + member.getUserid() + ", 역할: " + role);
 
@@ -45,12 +45,17 @@ public class AuthController {
         String refreshToken = jwtUtil.generateRefreshToken(member.getUserid());
 
         // ✅ Access Token을 쿠키에 저장 (HttpOnly X - JS에서 접근 가능)
-        setCookie(response, "jwt", accessToken, false, 30 * 60);
+        Cookie accessTokenCookie = new Cookie("jwt", accessToken);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(30 * 60);
+        response.addCookie(accessTokenCookie);
 
-        // ✅ Refresh Token을 HttpOnly 쿠키에 저장
-        setCookie(response, "refreshToken", refreshToken, true, 7 * 24 * 60 * 60);
+        // ✅ Refresh Token을 Redis에 저장 (쿠키에는 저장하지 않음)
+        redisService.saveRefreshToken(member.getUserid(), refreshToken);
+        System.out.println("🟢 [로그인 성공] Access Token은 쿠키에 저장, Refresh Token은 Redis에 저장됨");
 
-        System.out.println("🟢 [로그인 성공] Access Token 및 Refresh Token이 쿠키에 저장됨");
         return ResponseEntity.ok(Map.of("message", "로그인 성공"));
     }
 
@@ -68,30 +73,37 @@ public class AuthController {
     }
 
     /**
-     * ✅ Access Token 재발급 (Refresh Token 사용)
+     * ✅ Access Token 재발급 (Refresh Token을 Redis에서 확인 후 발급)
      */
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = getRefreshTokenFromCookies(request);
-        if (refreshToken == null || !jwtUtil.isTokenValid(refreshToken)) {
-            System.out.println("🔴 [Access Token 재발급 실패] Refresh Token 없음 또는 유효하지 않음");
-            return ResponseEntity.status(401).body(Map.of("error", "Refresh Token이 유효하지 않음"));
+        String userid = getUserIdFromCookies(request);
+
+        if (userid == null) {
+            System.out.println("🔴 [오류] 쿠키에서 사용자 ID를 찾을 수 없음.");
+            return ResponseEntity.status(401).body(Map.of("error", "인증되지 않은 사용자"));
         }
 
-        String userid = jwtUtil.extractUserid(refreshToken);
-        if (!jwtUtil.isRefreshTokenValid(userid, refreshToken)) {
-            System.out.println("🔴 [Access Token 재발급 실패] Redis에서 Refresh Token이 유효하지 않음!");
-            return ResponseEntity.status(401).body(Map.of("error", "Refresh Token이 유효하지 않음"));
+        String refreshToken = redisService.getRefreshToken(userid);
+        if (refreshToken == null) {
+            System.out.println("🔴 [오류] Redis에서 Refresh Token을 찾을 수 없음.");
+            return ResponseEntity.status(401).body(Map.of("error", "Refresh Token이 존재하지 않음"));
         }
 
-        String role = jwtUtil.extractRole(refreshToken);
-        String newAccessToken = jwtUtil.generateToken(userid, role);
+        // ✅ 새로운 Access Token 발급
+        String newAccessToken = jwtUtil.generateToken(userid, "ROLE_USER");
 
-        // ✅ 새 Access Token을 쿠키에 저장
-        setCookie(response, "jwt", newAccessToken, false, 30 * 60);
+        // ✅ Access Token을 쿠키에 저장
+        Cookie accessTokenCookie = new Cookie("jwt", newAccessToken);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(30 * 60);
+        response.addCookie(accessTokenCookie);
 
-        System.out.println("🟢 [Access Token 재발급] 성공 - 사용자 ID: " + userid);
-        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+        System.out.println("🟢 [Access Token 재발급 완료] 사용자 ID: " + userid);
+
+        return ResponseEntity.ok(Map.of("message", "Access Token 재발급 완료"));
     }
 
     /**
@@ -99,20 +111,22 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = getRefreshTokenFromCookies(request);
-        if (refreshToken != null) {
-            String userid = jwtUtil.extractUserid(refreshToken);
-            if (userid != null) {
-                System.out.println("🟢 [로그아웃] Redis에서 Refresh Token 삭제 - 사용자 ID: " + userid);
-                jwtUtil.deleteRefreshToken(userid);
-            }
+        String userid = getUserIdFromCookies(request);
+        if (userid != null) {
+            redisService.deleteRefreshToken(userid);
+            System.out.println("🟢 [로그아웃] Redis에서 Refresh Token 삭제 - 사용자 ID: " + userid);
         }
 
-        // ✅ 쿠키에서 Access Token & Refresh Token 삭제
-        removeCookie(response, "jwt");
-        removeCookie(response, "refreshToken");
+        // ✅ 쿠키에서 Access Token 삭제
+        Cookie accessTokenCookie = new Cookie("jwt", null);
+        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(0);
+        response.addCookie(accessTokenCookie);
 
-        System.out.println("🟢 [로그아웃] 성공 - 쿠키 삭제 완료");
+        System.out.println("🟢 [로그아웃] 성공 - Access Token 쿠키 삭제 완료");
+
         return ResponseEntity.ok("로그아웃 성공");
     }
 
@@ -121,6 +135,7 @@ public class AuthController {
      */
     private String getJwtFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) return null;
+
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> "jwt".equals(cookie.getName()))
                 .map(Cookie::getValue)
@@ -129,38 +144,10 @@ public class AuthController {
     }
 
     /**
-     * ✅ 쿠키에서 Refresh Token 가져오기
+     * ✅ 쿠키에서 사용자 ID 가져오기
      */
-    private String getRefreshTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) return null;
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> "refreshToken".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
-
-    /**
-     * ✅ 쿠키 설정 함수
-     */
-    private void setCookie(HttpServletResponse response, String name, String value, boolean httpOnly, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(httpOnly);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
-    }
-
-    /**
-     * ✅ 쿠키 삭제 함수
-     */
-    private void removeCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+    private String getUserIdFromCookies(HttpServletRequest request) {
+        String token = getJwtFromCookies(request);
+        return token != null ? jwtUtil.extractUserid(token) : null;
     }
 }
