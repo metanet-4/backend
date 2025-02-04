@@ -26,13 +26,6 @@ jobs:
         env:
           APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
 
-
-      - name: Create application.properties
-        run: |
-          echo -e "$APPLICATION_PROPERTIES" > metanet4/src/main/resources/application.properties
-        env:
-          APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
-
       - name: Run tests
         run: mvn test
         working-directory: ./metanet4  
@@ -62,7 +55,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
-            cd ~/app/metanet4/project-dockerfile/
+            cd ~/app/metanet4/src/main/resources
 
             echo -e "${{ secrets.APPLICATION_PROPERTIES }}" > application.properties
 
