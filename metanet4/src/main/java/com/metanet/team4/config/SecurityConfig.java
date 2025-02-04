@@ -33,6 +33,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // ✅ 인증 없이 접근 가능한 API
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
+                .requestMatchers("/health" , "/health/db").permitAll()
                 
                 // ✅ 관리자 전용 API
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
