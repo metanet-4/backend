@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 관리</title>
+</head>
+<body>
+    <div th:replace="~{navbar}"></div>
+
+    <h1>사용자 관리</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+
+    <script>
+        function loadUsers() {
+            fetch("/admin/users", { method: "GET", credentials: "include" })
+            .then(response => response.json())
+            .then(users => {
+                let userTable = document.getElementById("userTableBody");
+                userTable.innerHTML = "";
+                users.forEach(user => {
+                    userTable.innerHTML += `<tr>
+                        <td>${user.userid}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td><button onclick="deleteUser('${user.userid}')">삭제</button></td>
+                    </tr>`;
+                });
+            });
+        }
+
+        window.onload = loadUsers;
+    </script>
+</body>
+</html>

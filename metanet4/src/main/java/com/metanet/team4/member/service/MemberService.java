@@ -1,47 +1,89 @@
 package com.metanet.team4.member.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.metanet.team4.member.dao.IMemberRepository;
+import com.metanet.team4.jwt.JwtUtil;
+import com.metanet.team4.member.dto.LoginRequest;
+import com.metanet.team4.member.dto.SignupRequest;
+import com.metanet.team4.member.mapper.member.MemberMapper;
 import com.metanet.team4.member.model.Member;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
-public class MemberService implements IMemberService {
+@RequiredArgsConstructor
+public class MemberService {
 
-	@Autowired
-	IMemberRepository memberDao;
-	
-	@Override
-	public void insertMember(Member member) {
-		memberDao.insertMember(member);
-	}
+    private final MemberMapper memberMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-	@Override
-	public Member selectMember(String userid) {
-		return memberDao.selectMember(userid);
-	}
+    /**
+     * 회원가입
+     */
+    public String registerUser(SignupRequest request) {
+        if (!request.getPassword().equals(request.getPassword2())) {
+            throw new RuntimeException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
 
-	@Override
-	public List<Member> selectAllMembers() {
-		return memberDao.selectAllMembers();
-	}
+        Member findUser = memberMapper.findByUserid(request.getUserid());
+        if (findUser != null) {
+            throw new RuntimeException("이미 사용 중인 아이디입니다.");
+        }
 
-	@Override
-	public void updateMember(Member member) {
-		memberDao.updateMember(member);
-	}
+        Member member = new Member();
+        member.setUserid(request.getUserid());
+        member.setName(request.getName());
+        member.setPassword(passwordEncoder.encode(request.getPassword()));
+        member.setPhone(request.getPhone());
+        member.setEmail(request.getEmail());
+        member.setRole("ROLE_USER"); // 기본 권한
 
-	@Override
-	public void deleteMember(Member member) {
-		memberDao.deleteMember(member);
-	}
+        memberMapper.insertMember(member);
+        return "회원가입 성공";
+    }
 
-	@Override
-	public String getPassword(String userid) {
-		return memberDao.getPassword(userid);
-	}
+    /**
+     * 로그인 (JWT 발급)
+     */
+    public String loginUser(LoginRequest request) {
+        // ✅ 최신 사용자 정보 가져오기
+        Member member = memberMapper.findByUserid(request.getUserid());
 
+        if (member == null) {
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        }
+
+        if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // ✅ 최신 역할 가져오기 (DB에서 강제 조회)
+        String latestRole = memberMapper.findByUserid(request.getUserid()).getRole();
+
+        if (latestRole == null) {
+            System.out.println("🔴 [오류] 최신 역할(role)이 null입니다. userid: " + request.getUserid());
+            throw new RuntimeException("서버 오류: 사용자의 역할이 없습니다.");
+        }
+
+        System.out.println("🟢 [로그인 성공] 사용자: " + member.getUserid() + ", 최신 역할: " + latestRole);
+
+        // ✅ 최신 ROLE을 포함한 JWT 발급
+        return jwtUtil.generateToken(member.getUserid(), latestRole);
+    }
+
+    /**
+     * 사용자 조회 (userid로 찾기)
+     */
+    public Member findByUserid(String userid) {
+        Member member = memberMapper.findByUserid(userid);
+
+        if (member == null) {
+            System.out.println("🔴 [오류] 존재하지 않는 사용자: " + userid);
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        }
+
+        return member;
+    }
 }
