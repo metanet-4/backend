@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.metanet.team4.movie.model.Movie;
+import com.metanet.team4.movie.model.MovieDetailResponse;
+import com.metanet.team4.movie.model.MovieMemberForChart;
 import com.metanet.team4.movie.service.IMovieService;
 
 @RestController
@@ -19,9 +21,11 @@ public class MovieController {
 	IMovieService movieService;
 
 	@GetMapping("/{productId}")
-	public Movie MovieDetail(@PathVariable("productId") String productId) {
-		Movie movie = movieService.selectMovie(productId);
+	public MovieDetailResponse MovieDetail(@PathVariable("productId") String productId) {
+		Movie movie = movieService.SelectMovie(productId);
 		System.out.println(movie);
-		return movie;
+		MovieMemberForChart movieMemberForChart = movieService.CountForChart(productId);
+		System.out.println(movieMemberForChart);
+	    return new MovieDetailResponse(movie, movieMemberForChart);
 	}
 }
