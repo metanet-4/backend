@@ -1,6 +1,6 @@
 package com.metanet.team4.member.service;
 
-import com.metanet.team4.member.mapper.member.MemberMapper;
+import com.metanet.team4.member.mapper.MemberMapper;
 import com.metanet.team4.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
