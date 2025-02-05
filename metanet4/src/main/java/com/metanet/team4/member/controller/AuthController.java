@@ -54,6 +54,7 @@ public class AuthController {
 
         // ✅ Refresh Token을 Redis에 저장 (쿠키에는 저장하지 않음)
         redisService.saveRefreshToken(member.getUserId(), refreshToken);
+
         System.out.println("🟢 [로그인 성공] Access Token은 쿠키에 저장, Refresh Token은 Redis에 저장됨");
 
         return ResponseEntity.ok(Map.of("message", "로그인 성공"));
