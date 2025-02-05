@@ -2,6 +2,7 @@ package com.metanet.team4.member.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.dto.LoginRequest;
@@ -10,6 +11,9 @@ import com.metanet.team4.member.mapper.MemberMapper;
 import com.metanet.team4.member.model.Member;
 
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -27,10 +31,17 @@ public class MemberService {
             throw new RuntimeException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
 
+        // ✅ 아이디 중복 검사
         Member findUser = memberMapper.findByUserid(request.getUserId());
         if (findUser != null) {
             throw new RuntimeException("이미 사용 중인 아이디입니다.");
         }
+
+        // ✅ 이메일 중복 검사 (추가 가능)
+        // Member findByEmail = memberMapper.findByEmail(request.getEmail());
+        // if (findByEmail != null) {
+        //    throw new RuntimeException("이미 사용 중인 이메일입니다.");
+        // }
 
         Member member = new Member();
         member.setUserId(request.getUserId());
@@ -39,6 +50,20 @@ public class MemberService {
         member.setPhone(request.getPhone());
         member.setEmail(request.getEmail());
         member.setRole("ROLE_USER"); // 기본 권한
+        member.setBirthday(request.getBirthday()); // ✅ 생일 반영
+        member.setGender(request.getGender());     // ✅ 성별 반영
+
+        // ✅ 장애인 인증서 파일 처리
+        if (request.getDisabilityCertificate() != null) {
+            try {
+                MultipartFile file = request.getDisabilityCertificate();
+                byte[] fileBytes = file.getBytes();
+                String encodedFile = Base64.getEncoder().encodeToString(fileBytes);
+                member.setDisabilityCertificate(encodedFile);
+            } catch (IOException e) {
+                throw new RuntimeException("파일 업로드 중 오류 발생");
+            }
+        }
 
         memberMapper.insertMember(member);
         return "회원가입 성공";
