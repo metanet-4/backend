@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.dto.LoginRequest;
 import com.metanet.team4.member.dto.SignupRequest;
-import com.metanet.team4.member.mapper.member.MemberMapper;
+import com.metanet.team4.member.mapper.MemberMapper;
 import com.metanet.team4.member.model.Member;
 
 import lombok.RequiredArgsConstructor;
@@ -27,13 +27,13 @@ public class MemberService {
             throw new RuntimeException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
 
-        Member findUser = memberMapper.findByUserid(request.getUserid());
+        Member findUser = memberMapper.findByUserid(request.getUserId());
         if (findUser != null) {
             throw new RuntimeException("이미 사용 중인 아이디입니다.");
         }
 
         Member member = new Member();
-        member.setUserid(request.getUserid());
+        member.setUserId(request.getUserId());
         member.setName(request.getName());
         member.setPassword(passwordEncoder.encode(request.getPassword()));
         member.setPhone(request.getPhone());
@@ -67,10 +67,10 @@ public class MemberService {
             throw new RuntimeException("서버 오류: 사용자의 역할이 없습니다.");
         }
 
-        System.out.println("🟢 [로그인 성공] 사용자: " + member.getUserid() + ", 최신 역할: " + latestRole);
+        System.out.println("🟢 [로그인 성공] 사용자: " + member.getUserId() + ", 최신 역할: " + latestRole);
 
         // ✅ 최신 ROLE을 포함한 JWT 발급
-        return jwtUtil.generateToken(member.getUserid(), latestRole);
+        return jwtUtil.generateToken(member.getUserId(), latestRole);
     }
 
     /**

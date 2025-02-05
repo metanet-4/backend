@@ -4,19 +4,22 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
 
 @Getter
 @Setter
 @ToString
 public class Member {
-    private String userid;
+    private Long id;
+    private String userId;
     private String name;
     private String password;
     private String phone;
     private String email;
+    private Date birthday;
+    private Integer gender;
+    private String image; // 프로필 사진 (파일 경로 저장)
+    private String disabilityCertificate; // 장애인 인증서 이미지 파일 경로
+    private Integer isDiscounted = 0;  // 🎯 기본값 0 (일반 사용자), 관리자가 승인하면 1로 변경
     private String role;
-
-    // 회원가입 시 비밀번호 확인용으로만 쓰려면, DB 컬럼 연결은 안 하는 게 일반적
-    // DB 저장 불필요한 필드는 DTO로만 처리하는 것이 보통 좋습니다.
-    // private String password2;
 }

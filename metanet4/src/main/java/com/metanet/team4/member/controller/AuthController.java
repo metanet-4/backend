@@ -38,11 +38,11 @@ public class AuthController {
 
         // ✅ 역할(role) 기본값 설정
         String role = (member.getRole() == null || member.getRole().isEmpty()) ? "ROLE_USER" : member.getRole();
-        System.out.println("🟢 [로그인 성공] 사용자 ID: " + member.getUserid() + ", 역할: " + role);
+        System.out.println("🟢 [로그인 성공] 사용자 ID: " + member.getUserId() + ", 역할: " + role);
 
         // ✅ JWT 토큰 생성
-        String accessToken = jwtUtil.generateToken(member.getUserid(), role);
-        String refreshToken = jwtUtil.generateRefreshToken(member.getUserid());
+        String accessToken = jwtUtil.generateToken(member.getUserId(), role);
+        String refreshToken = jwtUtil.generateRefreshToken(member.getUserId());
 
         // ✅ Access Token을 쿠키에 저장 (HttpOnly X - JS에서 접근 가능)
         Cookie accessTokenCookie = new Cookie("jwt", accessToken);
@@ -53,7 +53,7 @@ public class AuthController {
         response.addCookie(accessTokenCookie);
 
         // ✅ Refresh Token을 Redis에 저장 (쿠키에는 저장하지 않음)
-        redisService.saveRefreshToken(member.getUserid(), refreshToken);
+        redisService.saveRefreshToken(member.getUserId(), refreshToken);
         System.out.println("🟢 [로그인 성공] Access Token은 쿠키에 저장, Refresh Token은 Redis에 저장됨");
 
         return ResponseEntity.ok(Map.of("message", "로그인 성공"));
