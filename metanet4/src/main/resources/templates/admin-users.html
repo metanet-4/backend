@@ -23,8 +23,28 @@
     </table>
 
     <script>
+        /**
+         * ✅ JWT 토큰을 Authorization 헤더에 추가하는 함수
+         */
+        function getJwtToken() {
+            const cookies = document.cookie.split("; ");
+            for (let cookie of cookies) {
+                if (cookie.startsWith("jwt=")) {
+                    return cookie.split("=")[1];
+                }
+            }
+            return "";
+        }
+
+        /**
+         * ✅ 사용자 목록 불러오기
+         */
         function loadUsers() {
-            fetch("/admin/users", { method: "GET", credentials: "include" })
+            fetch("/admin/users", { 
+                method: "GET",
+                credentials: "include",
+                headers: { "Authorization": `Bearer ${getJwtToken()}` }
+            })
             .then(response => response.json())
             .then(users => {
                 let userTable = document.getElementById("userTableBody");
@@ -48,25 +68,50 @@
                         </td>
                     </tr>`;
                 });
-            });
+            })
+            .catch(error => console.error("사용자 목록 불러오기 실패:", error));
         }
 
+        /**
+         * ✅ 우대 여부 승인 요청 (PUT 요청)
+         */
         function approveDiscount(userId) {
-            fetch(`/admin/users/${userId}/approve-discount`, { method: "PUT", credentials: "include" })
+            fetch(`/admin/users/${userId}/approve-discount`, { 
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getJwtToken()}` // ✅ Authorization 헤더 추가
+                },
+                credentials: "include",
+                body: JSON.stringify({ userId: userId })
+            })
             .then(response => {
                 if (response.ok) {
                     alert("우대 여부가 승인되었습니다.");
-                    loadUsers();
+                    loadUsers(); // ✅ 리스트 갱신
                 } else {
                     alert("승인 실패");
                 }
+            })
+            .catch(error => {
+                console.error("승인 요청 중 오류 발생:", error);
+                alert("서버 오류");
             });
         }
 
+        /**
+         * ✅ 사용자 삭제 요청 (DELETE 요청)
+         */
         function deleteUser(userId) {
             if (!confirm("정말로 삭제하시겠습니까?")) return;
 
-            fetch(`/admin/users/${userId}`, { method: "DELETE", credentials: "include" })
+            fetch(`/admin/users/${userId}`, { 
+                method: "DELETE",
+                headers: { 
+                    "Authorization": `Bearer ${getJwtToken()}` // ✅ Authorization 헤더 추가
+                },
+                credentials: "include"
+            })
             .then(response => {
                 if (response.ok) {
                     alert("사용자가 삭제되었습니다.");
@@ -74,6 +119,10 @@
                 } else {
                     alert("삭제 실패");
                 }
+            })
+            .catch(error => {
+                console.error("사용자 삭제 중 오류 발생:", error);
+                alert("서버 오류");
             });
         }
 

@@ -55,7 +55,9 @@ public class AdminService {
     /**
      * ✅ 관리자가 우대 여부 승인 (is_discounted = 1로 변경)
      */
-    public void approveDiscount(String userId) {
-        memberMapper.approveDiscount(userId);
+    public boolean approveDiscount(String userId) {
+        int updatedRows = memberMapper.approveDiscount(userId);
+        return updatedRows > 0; // 성공 여부 반환
     }
+
 }

@@ -38,7 +38,7 @@ public interface MemberMapper {
     void updateDisabilityCertificate(@Param("userId") String userId, @Param("disabilityCertificate") String disabilityCertificate);
 
     // ✅ 관리자: 우대 여부 승인 (is_discounted = 1로 변경)
-    void approveDiscount(@Param("userId") String userId);
+    int approveDiscount(@Param("userId") String userId); // ✅ 반환값을 int로 변경
 
     // ✅ 장애인 인증서 파일 경로 조회 (관리자 전용)
     @Select("SELECT disability_certificate FROM MEMBER WHERE user_id = #{userId}")
