@@ -42,6 +42,7 @@ public class SecurityConfig {
                 // ✅ 정적 리소스 허용 (JavaScript, CSS, 이미지)
                 .requestMatchers("/js/**", "/css/**", "/images/**", "/favicon.ico").permitAll()
                 // ✅ 인증 없이 접근 가능한 API
+            		.requestMatchers( "/","/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
                 .requestMatchers("/health", "/health/db").permitAll()
 
