@@ -5,29 +5,50 @@
 <mapper namespace="com.metanet.team4.member.mapper.MemberMapper">
 
     <!-- ✅ userId로 회원 정보 조회 -->
-    <resultMap id="memberResultMap" type="com.metanet.team4.member.model.Member">
-	    <result column="USER_ID" property="userId"/>
-	    <result column="NAME" property="name"/>
-	    <result column="PASSWORD" property="password"/>
-	    <result column="EMAIL" property="email"/>
-	    <result column="ROLE" property="role"/>
-	</resultMap>
+ <!-- ✅ Member 테이블의 컬럼과 Member 객체 매핑 -->
+<resultMap id="memberResultMap" type="com.metanet.team4.member.model.Member">
+    <id property="id" column="ID" />
+    <result property="userId" column="USER_ID" />
+    <result property="name" column="NAME" />
+    <result property="password" column="PASSWORD" />
+    <result property="phone" column="PHONE" />
+    <result property="email" column="EMAIL" />
+    <result property="birthday" column="BIRTHDAY" jdbcType="DATE" />
+    <result property="gender" column="GENDER" />
+    <result property="image" column="IMAGE" />
+    <result property="disabilityCertificate" column="DISABILITY_CERTIFICATE" />
+    <result property="isDiscounted" column="IS_DISCOUNTED" />
+    <result property="role" column="ROLE" />
+</resultMap>
 
-	<select id="findByUserId" resultMap="memberResultMap">
-	    SELECT USER_ID, NAME, PASSWORD, EMAIL, ROLE 
-	    FROM MEMBER 
-	    WHERE USER_ID = #{userId}
-	</select>
+<!-- ✅ userId로 회원 정보 조회 -->
+<select id="findByUserId" resultMap="memberResultMap" parameterType="String">
+    SELECT * FROM MEMBER WHERE USER_ID = #{userId}
+</select>
+
 
 
     <!-- ✅ 회원 가입 -->
-    <insert id="insertMember" parameterType="com.metanet.team4.member.model.Member">
-        <selectKey keyProperty="id" resultType="Long" order="BEFORE">
-            SELECT MEMBER_SEQ.NEXTVAL FROM DUAL
-        </selectKey>
-        INSERT INTO MEMBER (ID, USER_ID, PASSWORD, NAME, PHONE, EMAIL, BIRTHDAY, GENDER, ROLE, IMAGE, DISABILITY_CERTIFICATE, IS_DISCOUNTED)
-        VALUES (#{id}, #{userId}, #{password}, #{name}, #{phone}, #{email}, #{birthday, jdbcType=DATE}, #{gender}, #{role}, #{image}, #{disabilityCertificate}, #{isDiscounted})
-    </insert>
+<insert id="insertMember" parameterType="com.metanet.team4.member.model.Member">
+       <selectKey keyProperty="id" resultType="Long" order="BEFORE">
+           SELECT MEMBER_SEQ.NEXTVAL FROM DUAL
+       </selectKey>
+       INSERT INTO MEMBER (ID, USER_ID, PASSWORD, NAME, PHONE, EMAIL, BIRTHDAY, GENDER, ROLE, IMAGE, DISABILITY_CERTIFICATE, IS_DISCOUNTED)
+       VALUES (
+           #{id}, 
+           #{userId}, 
+           #{password}, 
+           #{name}, 
+           #{phone}, 
+           #{email}, 
+           #{birthday, jdbcType=DATE}, 
+           #{gender}, 
+           #{role}, 
+           #{image, jdbcType=CLOB},  <!-- ✅ image 필드 CLOB 처리 -->
+           #{disabilityCertificate, jdbcType=CLOB},  <!-- ✅ 인증서 CLOB 처리 -->
+           #{isDiscounted, jdbcType=NUMERIC}  <!-- ✅ NULL 값 처리 가능하도록 NUMERIC 설정 -->
+       )
+   </insert>
 
     <!-- ✅ 전체 사용자 조회 -->
     <select id="selectAllMembers" resultType="com.metanet.team4.member.model.Member">
