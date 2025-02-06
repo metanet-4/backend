@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import com.metanet.team4.movie.model.Likes;
 import com.metanet.team4.movie.model.Movie;
 import com.metanet.team4.movie.model.MovieMemberForChart;
 
@@ -62,6 +63,16 @@ public class MovieRepository implements IMovieRepository {
 		}
 	}
 	
+	private class LikesMapper implements RowMapper<Likes>{
+		@Override
+		public Likes mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Likes like = new Likes();
+			like.setMemberId(rs.getString("member_id"));
+			like.setMovieId(rs.getString("movie_id"));
+			return like;
+		}
+	}
+	
 	@Override
 	public Movie SelectMovie(String id) {
 		String sql="select id, krname, enname, directors, actors, release_date, open_yn, main_image, description, total_audience, like_count, nation, show_time, watch_grade\r\n"
@@ -90,5 +101,29 @@ public class MovieRepository implements IMovieRepository {
 				+ "GROUP BY p.movie_id";
 		return jdbcTemplate.queryForObject(sql, new MovieMemberForChartMapper(), id);
 	}
+
+	@Override
+	public Boolean isLiked(String memberId, String movieId) {
+		String sql = "SELECT COUNT(*) FROM likes "
+				+ "WHERE member_id = (SELECT id FROM member WHERE user_id = ?) "
+				+ "AND movie_id = ?"
+				+ "";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, memberId, movieId);
+        return count != null && count > 0;
+	}
+
+	@Override
+	public void addLike(String userId, String movieId) {
+        String sql = "INSERT INTO likes (id, member_id, movie_id) VALUES (like_seq.nextval, (SELECT id FROM member WHERE user_id = ?), ?)";
+        jdbcTemplate.update(sql, userId, movieId);
+    }
+
+    @Override
+    public void removeLike(String userId, String movieId) {
+        String sql = "DELETE FROM likes WHERE member_id = (SELECT id FROM member WHERE user_id = ?) AND movie_id = ?";
+        jdbcTemplate.update(sql, userId, movieId);
+    }
+
+
 
 }

@@ -23,4 +23,21 @@ public class MovieService implements IMovieService {
 		return movieRepository.CountForChart(id);
 	}
 
+	@Override
+	public Boolean isLiked(String memberId, String movieId) {
+		return movieRepository.isLiked(memberId, movieId);
+	}
+
+	@Override
+	public String addLike(String memberId, String movieId) {
+        movieRepository.addLike(memberId, movieId);
+        return "좋아요 추가됨";
+	}
+
+	@Override
+	public String removeLike(String memberId, String movieId) {
+		movieRepository.removeLike(memberId, movieId);
+		return "좋아요 삭제됨";
+	}
+
 }
