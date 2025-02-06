@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
@@ -59,10 +60,20 @@ public class AdminController {
     /**
      * ✅ 관리자가 우대 여부 승인 (is_discounted = 1로 변경)
      */
-    @PostMapping("/users/{userId}/approve-discount")
+    @PutMapping("/users/{userId}/approve-discount")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> approveDiscount(@PathVariable String userId) {
-        adminService.approveDiscount(userId);
-        return ResponseEntity.ok(userId + "님의 우대 여부가 승인되었습니다.");
+    public ResponseEntity<String> approveDiscount(@PathVariable String userId, @RequestBody Map<String, String> request) {
+        System.out.println("🟢 [AdminController] 승인 API 호출됨 - User ID: " + userId);
+        
+        boolean success = adminService.approveDiscount(userId);
+        if (success) {
+            System.out.println("✅ [AdminController] 승인 완료");
+            return ResponseEntity.ok("우대 여부가 승인되었습니다.");
+        } else {
+            System.out.println("❌ [AdminController] 승인 실패");
+            return ResponseEntity.badRequest().body("승인 실패");
+        }
     }
+
+
 }

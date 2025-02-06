@@ -64,11 +64,11 @@ function setAccessToken(token) {
 }
 
 // ✅ 10초마다 자동으로 로그인 상태 확인 (Access Token 만료 감지)
-setInterval(() => {
+/*setInterval(() => {
     fetchWithAuth("/auth/check").then(response => response.json()).then(data => {
         console.log("🔍 로그인 상태 자동 확인:", data);
         if (!data.loggedIn) {
             window.location.href = "/auth/login";
         }
     });
-}, 10000);
+}, 10000);*/
