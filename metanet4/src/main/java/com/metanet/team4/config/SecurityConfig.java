@@ -32,6 +32,7 @@ public class SecurityConfig {
         http.csrf().disable()
             .authorizeHttpRequests(auth -> auth
                 // ✅ 인증 없이 접근 가능한 API
+            		.requestMatchers( "/","/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
                 .requestMatchers("/health" , "/health/db").permitAll()
                 
