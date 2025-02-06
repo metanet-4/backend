@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserPageController {
 
@@ -21,23 +23,49 @@ public class UserPageController {
     /**
      * ✅ 프로필 페이지 (로그인한 사용자만 접근 가능)
      */
-    @GetMapping("/user/profile")
+    @GetMapping("/profile")
     public String getProfilePage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
-        String userid = getUserIdFromRequest(request);
+        String userId = getUserIdFromRequest(request);
 
-        if (userid == null) {
+        if (userId == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
             return "redirect:/auth/login";
         }
 
-        Member member = userService.getUserInfo(userid);
+        Member member = userService.getUserInfo(userId);
         model.addAttribute("member", member);
+
+        // ✅ 장애인 인증서 정보 추가
+        String certificate = userService.getDisabilityCertificate(userId);
+        model.addAttribute("disabilityCertificate", certificate);
 
         return "profile";
     }
 
     /**
-     * 🔹 쿠키에서 JWT 토큰 파싱 → userid 추출
+     * ✅ 장애인 인증서 확인 페이지
+     */
+    
+    public String getCertificatePage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+        String userId = getUserIdFromRequest(request);
+
+        if (userId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+
+        String certificate = userService.getDisabilityCertificate(userId);
+        if (certificate == null || certificate.isEmpty()) {
+            model.addAttribute("message", "등록된 장애인 인증서가 없습니다.");
+        } else {
+            model.addAttribute("certificate", certificate);
+        }
+
+        return "certificate";
+    }
+
+    /**
+     * 🔹 쿠키에서 JWT 토큰 파싱 → userId 추출
      */
     private String getUserIdFromRequest(HttpServletRequest request) {
         if (request.getCookies() != null) {
@@ -45,7 +73,7 @@ public class UserPageController {
                 if ("jwt".equals(cookie.getName())) {
                     String token = cookie.getValue();
                     if (jwtUtil.isTokenValid(token)) {
-                        return jwtUtil.extractUserid(token);
+                        return jwtUtil.extractUserId(token);
                     }
                 }
             }

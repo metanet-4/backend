@@ -25,8 +25,8 @@ public class UserController {
      */
     @PutMapping("/password")
     public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request, HttpServletRequest httpRequest) {
-        String userid = getUserIdFromRequest(httpRequest);
-        userService.changePassword(userid, request);
+        String userId = getUserIdFromRequest(httpRequest);
+        userService.changePassword(userId, request);
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 
@@ -35,14 +35,14 @@ public class UserController {
      */
     @PutMapping("/profile-pic")
     public ResponseEntity<String> updateProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest httpRequest) {
-        String userid = getUserIdFromRequest(httpRequest);
+        String userId = getUserIdFromRequest(httpRequest);
 
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("파일이 비어 있습니다.");
         }
 
         try {
-            userService.updateProfilePic(userid, file);
+            userService.updateProfilePic(userId, file);
             return ResponseEntity.ok("프로필 사진이 변경되었습니다.");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("파일 업로드 실패: " + e.getMessage());
@@ -54,9 +54,24 @@ public class UserController {
      */
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(HttpServletRequest httpRequest) {
-        String userid = getUserIdFromRequest(httpRequest);
-        userService.deleteUser(userid);
+        String userId = getUserIdFromRequest(httpRequest);
+        userService.deleteUser(userId);
         return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+    }
+
+    /**
+     * ✅ 자신의 장애인 인증서 조회 기능 추가
+     */
+    @GetMapping("/certificate")
+    public ResponseEntity<String> getDisabilityCertificate(HttpServletRequest httpRequest) {
+        String userId = getUserIdFromRequest(httpRequest);
+        String certificate = userService.getDisabilityCertificate(userId);
+
+        if (certificate == null || certificate.isEmpty()) {
+            return ResponseEntity.ok("등록된 장애인 인증서가 없습니다.");
+        }
+
+        return ResponseEntity.ok(certificate);
     }
 
     /**
@@ -68,7 +83,7 @@ public class UserController {
                 if ("jwt".equals(cookie.getName())) {
                     String token = cookie.getValue();
                     if (jwtUtil.isTokenValid(token)) {
-                        return jwtUtil.extractUserid(token);
+                        return jwtUtil.extractUserId(token);
                     }
                 }
             }

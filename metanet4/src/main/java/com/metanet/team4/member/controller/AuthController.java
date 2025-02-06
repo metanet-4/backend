@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.dto.LoginRequest;
+import com.metanet.team4.member.dto.SignupRequest;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.member.service.MemberService;
 import com.metanet.team4.member.service.RedisService;
@@ -24,41 +25,55 @@ public class AuthController {
     private final RedisService redisService;
 
     /**
+     * ✅ 회원가입
+     */
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(@ModelAttribute SignupRequest request) {
+        try {
+            memberService.registerUser(request);
+            return ResponseEntity.ok("회원가입 성공");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+    /**
      * ✅ 로그인 (Access Token + Refresh Token 발급)
      */
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        System.out.println("🔹 로그인 요청: " + request.getUserid());
+        System.out.println("🔹 로그인 요청: " + request.getUserId()); // ✅ 로그 추가
 
-        Member member = memberService.findByUserid(request.getUserid());
+        if (request.getUserId() == null || request.getUserId().isEmpty()) {
+            System.out.println("🔴 [오류] login()에서 userId가 null입니다.");
+            return ResponseEntity.status(400).body(Map.of("error", "userId가 비어 있습니다."));
+        }
+
+        Member member = memberService.findByUserId(request.getUserId());
         if (member == null) {
-            System.out.println("🔴 [오류] 사용자를 찾을 수 없음: " + request.getUserid());
             return ResponseEntity.status(401).body(Map.of("error", "아이디 또는 비밀번호가 잘못되었습니다."));
         }
 
-        // ✅ 역할(role) 기본값 설정
-        String role = (member.getRole() == null || member.getRole().isEmpty()) ? "ROLE_USER" : member.getRole();
-        System.out.println("🟢 [로그인 성공] 사용자 ID: " + member.getUserId() + ", 역할: " + role);
+        String role = member.getRole();
+        if (role == null || role.isEmpty()) role = "ROLE_USER";
 
-        // ✅ JWT 토큰 생성
         String accessToken = jwtUtil.generateToken(member.getUserId(), role);
         String refreshToken = jwtUtil.generateRefreshToken(member.getUserId());
 
-        // ✅ Access Token을 쿠키에 저장 (HttpOnly X - JS에서 접근 가능)
+        // ✅ Access Token을 HttpOnly 쿠키에 저장
         Cookie accessTokenCookie = new Cookie("jwt", accessToken);
-        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(30 * 60);
         response.addCookie(accessTokenCookie);
 
-        // ✅ Refresh Token을 Redis에 저장 (쿠키에는 저장하지 않음)
         redisService.saveRefreshToken(member.getUserId(), refreshToken);
-
-        System.out.println("🟢 [로그인 성공] Access Token은 쿠키에 저장, Refresh Token은 Redis에 저장됨");
+        System.out.println("🟢 [로그인 성공] Access Token은 HttpOnly 쿠키에 저장, Refresh Token은 Redis에 저장됨");
 
         return ResponseEntity.ok(Map.of("message", "로그인 성공"));
     }
+
 
     /**
      * ✅ 로그인 상태 확인 API (쿠키에서 JWT 확인)
@@ -78,31 +93,36 @@ public class AuthController {
      */
     @PostMapping("/refresh")
     public ResponseEntity<Map<String, String>> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        String userid = getUserIdFromCookies(request);
+        String userId = getUserIdFromCookies(request);
 
-        if (userid == null) {
-            System.out.println("🔴 [오류] 쿠키에서 사용자 ID를 찾을 수 없음.");
+        if (userId == null) {
             return ResponseEntity.status(401).body(Map.of("error", "인증되지 않은 사용자"));
         }
 
-        String refreshToken = redisService.getRefreshToken(userid);
+        String refreshToken = redisService.getRefreshToken(userId);
         if (refreshToken == null) {
-            System.out.println("🔴 [오류] Redis에서 Refresh Token을 찾을 수 없음.");
             return ResponseEntity.status(401).body(Map.of("error", "Refresh Token이 존재하지 않음"));
         }
 
-        // ✅ 새로운 Access Token 발급
-        String newAccessToken = jwtUtil.generateToken(userid, "ROLE_USER");
+        // ✅ 최신 역할 가져오기 (DB에서)
+        Member member = memberService.findByUserId(userId);
+        if (member == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "사용자를 찾을 수 없음"));
+        }
+        String role = member.getRole();
 
-        // ✅ Access Token을 쿠키에 저장
+        // ✅ 새로운 Access Token 발급
+        String newAccessToken = jwtUtil.generateToken(userId, role);
+
+        // ✅ Access Token을 HttpOnly 쿠키에 저장
         Cookie accessTokenCookie = new Cookie("jwt", newAccessToken);
-        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(30 * 60);
         response.addCookie(accessTokenCookie);
 
-        System.out.println("🟢 [Access Token 재발급 완료] 사용자 ID: " + userid);
+        System.out.println("🟢 [Access Token 재발급 완료] 사용자 ID: " + userId);
 
         return ResponseEntity.ok(Map.of("message", "Access Token 재발급 완료"));
     }
@@ -112,15 +132,15 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        String userid = getUserIdFromCookies(request);
-        if (userid != null) {
-            redisService.deleteRefreshToken(userid);
-            System.out.println("🟢 [로그아웃] Redis에서 Refresh Token 삭제 - 사용자 ID: " + userid);
+        String userId = getUserIdFromCookies(request);
+        if (userId != null) {
+            redisService.deleteRefreshToken(userId);
+            System.out.println("🟢 [로그아웃] Redis에서 Refresh Token 삭제 - 사용자 ID: " + userId);
         }
 
         // ✅ 쿠키에서 Access Token 삭제
         Cookie accessTokenCookie = new Cookie("jwt", null);
-        accessTokenCookie.setHttpOnly(false);
+        accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(true);
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge(0);
@@ -149,6 +169,6 @@ public class AuthController {
      */
     private String getUserIdFromCookies(HttpServletRequest request) {
         String token = getJwtFromCookies(request);
-        return token != null ? jwtUtil.extractUserid(token) : null;
+        return token != null ? jwtUtil.extractUserId(token) : null;
     }
 }
