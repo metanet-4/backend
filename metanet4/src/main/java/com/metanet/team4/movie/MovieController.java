@@ -1,5 +1,7 @@
 package com.metanet.team4.movie;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,14 +15,18 @@ import com.metanet.team4.movie.model.Movie;
 import com.metanet.team4.movie.model.MovieDetailResponse;
 import com.metanet.team4.movie.model.MovieMemberForChart;
 import com.metanet.team4.movie.service.IMovieService;
+import com.metanet.team4.movie.service.MovieListService;
 
 @RestController
 @RequestMapping("/movie")
-@CrossOrigin(origins = "http://localhost:5174")
+@CrossOrigin(origins = "http://localhost:5173")
 public class MovieController {
 	
 	@Autowired
 	IMovieService movieService;
+	
+	@Autowired
+	MovieListService movieListService;
 
 	@GetMapping("/{movieId}")
 	public MovieDetailResponse MovieDetail(@PathVariable("movieId") String movieId) {
@@ -46,5 +52,15 @@ public class MovieController {
             movieService.addLike(memberId, movieId);
             return ResponseEntity.ok("좋아요 추가됨");
         }
+    }
+	
+    @GetMapping("/boxoffice")
+    public List<Movie> getBoxOfficeMovies() {
+        return movieListService.getBoxOfficeMovies();
+    }
+
+    @GetMapping("/comingsoon")
+    public List<Movie> getComingSoonMovies() {
+        return movieListService.getComingSoonMovies();
     }
 }
