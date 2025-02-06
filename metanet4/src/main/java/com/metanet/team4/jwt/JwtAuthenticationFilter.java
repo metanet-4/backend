@@ -48,10 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // ✅ Refresh Token 검사 후 Access Token 자동 갱신
             String refreshToken = getRefreshTokenFromCookies(request);
             if (refreshToken != null) {
-                String userid = jwtUtil.extractUserid(refreshToken);
-                if (jwtUtil.isRefreshTokenValid(userid, refreshToken)) {
+                String userId = jwtUtil.extractUserId(refreshToken);  // ✅ 변경: extractUserid → extractUserId
+                if (jwtUtil.isRefreshTokenValid(userId, refreshToken)) {
                     String role = jwtUtil.extractRole(refreshToken);
-                    String newAccessToken = jwtUtil.generateToken(userid, role);
+                    String newAccessToken = jwtUtil.generateToken(userId, role);
 
                     // ✅ 새로운 Access Token을 응답 헤더에 추가
                     response.setHeader("Authorization", "Bearer " + newAccessToken);
@@ -91,11 +91,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * ✅ JWT에서 사용자 인증을 수행하여 SecurityContextHolder에 저장
      */
     private void authenticateUser(String token) {
-        String userid = jwtUtil.extractUserid(token);
+        String userId = jwtUtil.extractUserId(token);  // ✅ 변경
         String role = jwtUtil.extractRole(token);
 
-        if (userid == null || role == null) {
-            System.out.println("🔴 [JWT 필터] 토큰에서 사용자 ID 또는 역할을 추출하지 못함.");
+        System.out.println("🟢 [JWT 필터] 토큰 파싱 결과 - ID: " + userId + ", ROLE: " + role);
+
+        if (userId == null) {
+            System.out.println("🔴 [JWT 필터] 토큰에서 사용자 ID를 추출하지 못함.");
+            return;
+        }
+        if (role == null) {
+            System.out.println("🔴 [JWT 필터] 토큰에서 역할을 추출하지 못함.");
             return;
         }
 
@@ -105,7 +111,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
         UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(userid, null, Collections.singletonList(authority));
+                new UsernamePasswordAuthenticationToken(userId, null, Collections.singletonList(authority));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

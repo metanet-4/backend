@@ -16,21 +16,21 @@ public class RedisService {
     /**
      * Refresh Token 저장 (유효기간 7일)
      */
-    public void saveRefreshToken(String userid, String refreshToken) {
-        redisTemplate.opsForValue().set("refreshToken:" + userid, refreshToken, 7, TimeUnit.DAYS);
+    public void saveRefreshToken(String userId, String refreshToken) {
+        redisTemplate.opsForValue().set("refreshToken:" + userId, refreshToken, 7, TimeUnit.DAYS);
     }
 
     /**
      * Refresh Token 조회
      */
-    public String getRefreshToken(String userid) {
-        return redisTemplate.opsForValue().get("refreshToken:" + userid);
+    public String getRefreshToken(String userId) {
+        return redisTemplate.opsForValue().get("refreshToken:" + userId);
     }
 
     /**
      * Refresh Token 삭제 (로그아웃 시)
      */
-    public void deleteRefreshToken(String userid) {
-        redisTemplate.delete("refreshToken:" + userid);
+    public void deleteRefreshToken(String userId) {
+        redisTemplate.delete("refreshToken:" + userId);
     }
 }

@@ -32,7 +32,7 @@ public class MemberService {
         }
 
         // ✅ 아이디 중복 검사
-        Member findUser = memberMapper.findByUserid(request.getUserId());
+        Member findUser = memberMapper.findByUserId(request.getUserId());
         if (findUser != null) {
             throw new RuntimeException("이미 사용 중인 아이디입니다.");
         }
@@ -74,7 +74,7 @@ public class MemberService {
      */
     public String loginUser(LoginRequest request) {
         // ✅ 최신 사용자 정보 가져오기
-        Member member = memberMapper.findByUserid(request.getUserid());
+        Member member = memberMapper.findByUserId(request.getUserId());
 
         if (member == null) {
             throw new RuntimeException("존재하지 않는 사용자입니다.");
@@ -85,10 +85,10 @@ public class MemberService {
         }
 
         // ✅ 최신 역할 가져오기 (DB에서 강제 조회)
-        String latestRole = memberMapper.findByUserid(request.getUserid()).getRole();
+        String latestRole = memberMapper.findByUserId(request.getUserId()).getRole();
 
         if (latestRole == null) {
-            System.out.println("🔴 [오류] 최신 역할(role)이 null입니다. userid: " + request.getUserid());
+            System.out.println("🔴 [오류] 최신 역할(role)이 null입니다. userId: " + request.getUserId());
             throw new RuntimeException("서버 오류: 사용자의 역할이 없습니다.");
         }
 
@@ -99,16 +99,21 @@ public class MemberService {
     }
 
     /**
-     * 사용자 조회 (userid로 찾기)
+     * 사용자 조회 (userId로 찾기)
      */
-    public Member findByUserid(String userid) {
-        Member member = memberMapper.findByUserid(userid);
+    public Member findByUserId(String userId) {
+        System.out.println("🟢 [DEBUG] findByUserId 호출됨 - userId: " + userId);
+        Member member = memberMapper.findByUserId(userId);
 
-        if (member == null) {
-            System.out.println("🔴 [오류] 존재하지 않는 사용자: " + userid);
-            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        if (member != null) {
+            System.out.println("🟢 [DEBUG] 조회된 Member 객체: " + member);
+            System.out.println("🟢 [DEBUG] 조회된 Member userId: " + member.getUserId());
+        } else {
+            System.out.println("🔴 [ERROR] Member 조회 실패! userId: " + userId);
         }
 
         return member;
     }
+
+
 }

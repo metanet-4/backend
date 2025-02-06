@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>장애인 인증서 확인</title>
+</head>
+<body>
+    <h1>장애인 인증서 확인</h1>
+
+    <p th:if="${message != null}" th:text="${message}"></p>
+
+    <p th:if="${certificate != null}">
+        <img th:src="'data:image/png;base64,' + ${certificate}" alt="장애인 인증서" width="500"/>
+    </p>
+
+    <br>
+    <a href="/user/profile"><button>프로필 페이지로 돌아가기</button></a>
+</body>
+</html>
