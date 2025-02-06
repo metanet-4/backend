@@ -119,7 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * ✅ 쿠키에서 Access Token 가져오기
      */
-    private String getJwtFromCookies(HttpServletRequest request) {
+    public String getJwtFromCookies(HttpServletRequest request) {
         if (request.getCookies() == null) return null;
 
         return Arrays.stream(request.getCookies())
