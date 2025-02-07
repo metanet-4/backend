@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +34,15 @@ public class AdminController {
     @GetMapping("/users/{userId}/certificate")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> getDisabilityCertificate(@PathVariable String userId) {
-        String certificate = adminService.getDisabilityCertificate(userId);
-        return ResponseEntity.ok(certificate);
+        byte[] certificateBytes = adminService.getDisabilityCertificate(userId);
+
+        if (certificateBytes == null || certificateBytes.length == 0) {
+            return ResponseEntity.ok("등록된 장애인 인증서가 없습니다.");
+        }
+
+        // ✅ Base64 인코딩하여 반환 (이미지 또는 파일 형태로 활용 가능)
+        String encodedCertificate = Base64.getEncoder().encodeToString(certificateBytes);
+        return ResponseEntity.ok(encodedCertificate);
     }
 
     /**

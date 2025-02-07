@@ -23,6 +23,18 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    
+    public boolean isUserIdDuplicate(String userId) {
+        return memberMapper.countByUserId(userId) > 0;
+    }
+
+    /**
+     * ✅ phone 중복 확인
+     */
+    public boolean isPhoneDuplicate(String phone) {
+        return memberMapper.countByPhone(phone) > 0;
+    }
+    
     /**
      * 회원가입
      */
@@ -32,16 +44,14 @@ public class MemberService {
         }
 
         // ✅ 아이디 중복 검사
-        Member findUser = memberMapper.findByUserId(request.getUserId());
-        if (findUser != null) {
+        if (isUserIdDuplicate(request.getUserId())) {
             throw new RuntimeException("이미 사용 중인 아이디입니다.");
         }
 
-        // ✅ 이메일 중복 검사 (추가 가능)
-        // Member findByEmail = memberMapper.findByEmail(request.getEmail());
-        // if (findByEmail != null) {
-        //    throw new RuntimeException("이미 사용 중인 이메일입니다.");
-        // }
+        // ✅ 전화번호 중복 검사
+        if (isPhoneDuplicate(request.getPhone())) {
+            throw new RuntimeException("이미 등록된 전화번호입니다.");
+        }
 
         Member member = new Member();
         member.setUserId(request.getUserId());
@@ -58,8 +68,7 @@ public class MemberService {
             try {
                 MultipartFile file = request.getDisabilityCertificate();
                 byte[] fileBytes = file.getBytes();
-                String encodedFile = Base64.getEncoder().encodeToString(fileBytes);
-                member.setDisabilityCertificate(encodedFile);
+                member.setDisabilityCertificate(fileBytes);
             } catch (IOException e) {
                 throw new RuntimeException("파일 업로드 중 오류 발생");
             }
@@ -105,12 +114,6 @@ public class MemberService {
         System.out.println("🟢 [DEBUG] findByUserId 호출됨 - userId: " + userId);
         Member member = memberMapper.findByUserId(userId);
 
-        if (member != null) {
-            System.out.println("🟢 [DEBUG] 조회된 Member 객체: " + member);
-            System.out.println("🟢 [DEBUG] 조회된 Member userId: " + member.getUserId());
-        } else {
-            System.out.println("🔴 [ERROR] Member 조회 실패! userId: " + userId);
-        }
 
         return member;
     }

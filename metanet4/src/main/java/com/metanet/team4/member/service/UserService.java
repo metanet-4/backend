@@ -8,7 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,18 +63,8 @@ public class UserService {
      * ✅ 프로필 사진 변경
      */
     public void updateProfilePic(String userId, MultipartFile file) throws IOException {
-        String uploadDir = "uploads/profile-pics/";
-        Path uploadPath = Paths.get(uploadDir);
-
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        String filename = userId + "_" + file.getOriginalFilename();
-        Path filePath = uploadPath.resolve(filename);
-        Files.copy(file.getInputStream(), filePath);
-
-        memberMapper.updateProfilePic(userId, filename);
+        byte[] fileBytes = file.getBytes();
+        memberMapper.updateProfilePic(userId, fileBytes);
     }
 
     /**
@@ -85,7 +77,21 @@ public class UserService {
     /**
      * ✅ 장애인 인증서 조회
      */
-    public String getDisabilityCertificate(String userId) {
-        return memberMapper.getDisabilityCertificate(userId);
+    public byte[] getDisabilityCertificate(String userId) {
+        InputStream inputStream = memberMapper.getDisabilityCertificate(userId);
+        if (inputStream == null) {
+            return new byte[0];  // ✅ NULL 방지
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();  // ✅ InputStream을 byte[]로 변환
+        } catch (IOException e) {
+            throw new RuntimeException("장애인 인증서 변환 오류", e);
+        }
     }
 }

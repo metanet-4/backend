@@ -60,6 +60,20 @@ public class JwtUtil {
         System.out.println("✅ [Refresh Token 저장] 사용자 ID: " + userId);
         return refreshToken;
     }
+    
+    /**
+     * ✅ 이메일 인증 토큰 생성 (10분 유효) 
+     */
+    /*public String generateEmailVerificationToken(String userId, String email) {
+        return Jwts.builder()
+                .setSubject(userId)
+                .claim("email", email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10분 유효
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .compact();
+    }*/
+
 
     /**
      * ✅ JWT에서 사용자 ID 추출
