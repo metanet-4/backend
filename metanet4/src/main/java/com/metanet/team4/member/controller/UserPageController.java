@@ -43,9 +43,43 @@ public class UserPageController {
     }
 
     /**
+     * ✅ 회원 정보 수정 페이지
+     */
+    @GetMapping("/updateInfo")
+    public String showUpdatePage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+        String userId = getUserIdFromRequest(request);
+
+        if (userId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+
+        Member member = userService.getUserInfo(userId);
+        model.addAttribute("member", member);
+
+        return "updateInfo";  // ✅ 회원 정보 수정 페이지 렌더링
+    }
+    
+    
+    @GetMapping("/delete")
+    public String showDeletePage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+        String userId = getUserIdFromRequest(request);
+
+        if (userId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/auth/login";
+        }
+
+        Member member = userService.getUserInfo(userId);
+        model.addAttribute("member", member); // ✅ member 객체 전달
+
+        return "delete";  
+    }
+
+
+    /**
      * ✅ 장애인 인증서 확인 페이지
      */
-    
     public String getCertificatePage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
         String userId = getUserIdFromRequest(request);
 

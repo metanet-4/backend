@@ -1,5 +1,8 @@
 package com.metanet.team4.movie.service;
 
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +17,13 @@ public class MovieService implements IMovieService {
 	IMovieRepository movieRepository;
 	
 	@Override
-	public Movie SelectMovie(String id) {
-		return movieRepository.SelectMovie(id);
+	public Movie selectMovie(String id) {
+		return movieRepository.selectMovie(id);
 	}
 
 	@Override
-	public MovieMemberForChart CountForChart(String id) {
-		return movieRepository.CountForChart(id);
+	public MovieMemberForChart countForChart(String id) {
+		return movieRepository.countForChart(id);
 	}
 
 	@Override
@@ -40,4 +43,8 @@ public class MovieService implements IMovieService {
 		return "좋아요 삭제됨";
 	}
 
+	@Override
+	public List<Movie> getLikedMovies(String memberId) {
+		return movieRepository.getLikedMovies(memberId);
+	}
 }
