@@ -7,18 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class ReserveList {
-	String userId;
-	int ticketStatus;
-	String movieTitle;
-	String mainImage;
-	Date startTime;
-	String cinemaName;
-	String screenName;
-	String seatName;
-	int reservationCode;
-	Date reservationTime;
-	int paymentAmount;
+	private String userId;
+	private int ticketStatus;
+	private String movieTitle;
+	private String mainImage;
+	private Date startTime;
+	private String cinemaName;
+	private String screenName;
+	private String seatName;
+	private int reservationCode;
+	private Date reservationTime;
+	private int paymentAmount;
 }

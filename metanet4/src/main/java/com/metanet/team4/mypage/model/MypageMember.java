@@ -7,13 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class MypageMember {
-	String userId;
-	String name;
-	String email;
-	Date birthday;
-	byte[] image;
-	int gender;
+	private String userId;
+	private String name;
+	private String email;
+	private Date birthday;
+	private byte[] image;
+	private int gender;
 }
