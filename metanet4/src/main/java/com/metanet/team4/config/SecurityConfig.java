@@ -39,7 +39,6 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ CORS 설정 추가
             .csrf(csrf -> csrf.disable()) // ✅ CSRF 비활성화
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/**").permitAll()
                 // ✅ 정적 리소스 허용 (JavaScript, CSS, 이미지)
                 .requestMatchers("/js/**", "/css/**", "/images/**", "/favicon.ico").permitAll()
                 // ✅ 인증 없이 접근 가능한 API
