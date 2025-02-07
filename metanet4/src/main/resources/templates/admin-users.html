@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 관리</title>
+</head>
+<body>
+    <div th:replace="~{navbar}"></div>
+
+    <h1>사용자 관리</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>아이디</th>
+                <th>이름</th>
+                <th>이메일</th>
+                <th>우대 여부</th>
+                <th>장애인 인증서</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+
+    <script>
+        /**
+         * ✅ JWT 토큰을 Authorization 헤더에 추가하는 함수
+         */
+        function getJwtToken() {
+            const cookies = document.cookie.split("; ");
+            for (let cookie of cookies) {
+                if (cookie.startsWith("jwt=")) {
+                    return cookie.split("=")[1];
+                }
+            }
+            return "";
+        }
+
+        /**
+         * ✅ 사용자 목록 불러오기
+         */
+        function loadUsers() {
+            fetch("/admin/users", { 
+                method: "GET",
+                credentials: "include",
+                headers: { "Authorization": `Bearer ${getJwtToken()}` }
+            })
+            .then(response => response.json())
+            .then(users => {
+                let userTable = document.getElementById("userTableBody");
+                userTable.innerHTML = "";
+                users.forEach(user => {
+                    userTable.innerHTML += `<tr>
+                        <td>${user.userId}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            ${user.isDiscounted == 1 ? '✅ 승인됨' : '❌ 미승인'}
+                            ${user.isDiscounted == 0 ? `<button onclick="approveDiscount('${user.userId}')">승인</button>` : ''}
+                        </td>
+                        <td>
+                            ${user.disabilityCertificate ? 
+                                `<a href="/admin/user/${user.userId}/certificate" target="_blank">확인</a>` 
+                                : '없음'}
+                        </td>
+                        <td>
+                            <button onclick="deleteUser('${user.userId}')">삭제</button>
+                        </td>
+                    </tr>`;
+                });
+            })
+            .catch(error => console.error("사용자 목록 불러오기 실패:", error));
+        }
+
+        /**
+         * ✅ 우대 여부 승인 요청 (PUT 요청)
+         */
+        function approveDiscount(userId) {
+            fetch(`/admin/users/${userId}/approve-discount`, { 
+                method: "PUT",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${getJwtToken()}` // ✅ Authorization 헤더 추가
+                },
+                credentials: "include",
+                body: JSON.stringify({ userId: userId })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("우대 여부가 승인되었습니다.");
+                    loadUsers(); // ✅ 리스트 갱신
+                } else {
+                    alert("승인 실패");
+                }
+            })
+            .catch(error => {
+                console.error("승인 요청 중 오류 발생:", error);
+                alert("서버 오류");
+            });
+        }
+
+        /**
+         * ✅ 사용자 삭제 요청 (DELETE 요청)
+         */
+        function deleteUser(userId) {
+            if (!confirm("정말로 삭제하시겠습니까?")) return;
+
+            fetch(`/admin/users/${userId}`, { 
+                method: "DELETE",
+                headers: { 
+                    "Authorization": `Bearer ${getJwtToken()}` // ✅ Authorization 헤더 추가
+                },
+                credentials: "include"
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("사용자가 삭제되었습니다.");
+                    loadUsers();
+                } else {
+                    alert("삭제 실패");
+                }
+            })
+            .catch(error => {
+                console.error("사용자 삭제 중 오류 발생:", error);
+                alert("서버 오류");
+            });
+        }
+
+        window.onload = loadUsers;
+    </script>
+</body>
+</html>

@@ -70,8 +70,8 @@ jobs:
           ISSUE_TITLE="${{ github.event.issue.title }}"
           echo "Original Issue Title: $ISSUE_TITLE"
 
-          # 2. 공백을 '-'로 변경, 특수 문자 제거 (한글 포함)
-          SAFE_TITLE=$(echo "$ISSUE_TITLE" | sed 's/ /_/g' | tr -cd '[:alnum:]_ㄱ-ㅎㅏ-ㅣ가-힣')
+          # 2. 공백을 '-'로 변경, '/'를 제외한 특수 문자 제거 (한글 포함)
+          SAFE_TITLE=$(echo "$ISSUE_TITLE" | sed 's/ /_/g' | tr -cd '[:alnum:]_ㄱ-ㅎㅏ-ㅣ가-힣/')
           echo "Sanitized Issue Title: $SAFE_TITLE"
 
           # 3. 제목이 비어있으면 기본값 사용

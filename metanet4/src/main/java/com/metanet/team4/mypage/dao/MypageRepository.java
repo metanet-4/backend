@@ -1,5 +1,7 @@
 package com.metanet.team4.mypage.dao;
 
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -26,7 +28,17 @@ public class MypageRepository implements IMypageRepository {
 			mypageMember.setName(rs.getString("name"));
 			mypageMember.setEmail(rs.getString("email"));
 			mypageMember.setBirthday(rs.getDate("birthday"));
-			mypageMember.setImage(rs.getBytes("image"));
+			Blob imageBlob = rs.getBlob("image");
+	        if (imageBlob != null) {
+	            try (InputStream inputStream = imageBlob.getBinaryStream()) {
+	                byte[] imageBytes = inputStream.readAllBytes();
+	                mypageMember.setImage(imageBytes);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        } else {
+	            mypageMember.setImage(null); // 이미지가 없으면 null 설정
+	        }
 			mypageMember.setGender(rs.getInt("gender"));
 			return mypageMember;
 		}

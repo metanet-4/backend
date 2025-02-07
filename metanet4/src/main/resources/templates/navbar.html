@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>네비게이션 바</title>
+    <script src="/js/refresh.js"></script>  <!-- ✅ refresh.js 추가 -->
+    <script>
+    function checkLoginStatus() {
+        fetch("/auth/check", { 
+            method: "GET", 
+            credentials: "include"  // ✅ 쿠키 포함
+        })
+        .then(response => {
+            if (response.status === 403) {
+                console.warn("🔴 403 Forbidden: 인증되지 않음. Access Token 갱신 시도");
+                return fetch("/auth/refresh", { method: "POST", credentials: "include" });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.loggedIn) {
+                console.log("🟢 로그인 상태 확인 성공:", data);
+                document.getElementById("loginButton").style.display = "none";
+                document.getElementById("signupButton").style.display = "none";
+                document.getElementById("logoutButton").style.display = "inline";
+                document.getElementById("profileButton").style.display = "inline";
+
+                if (data.role === "ROLE_ADMIN") {
+                    document.getElementById("adminButton").style.display = "inline";
+                } else {
+                    document.getElementById("adminButton").style.display = "none";
+                }
+            } else {
+                document.getElementById("loginButton").style.display = "inline";
+                document.getElementById("signupButton").style.display = "inline";
+                document.getElementById("logoutButton").style.display = "none";
+                document.getElementById("profileButton").style.display = "none";
+                document.getElementById("adminButton").style.display = "none";
+            }
+        })
+        .catch(error => {
+            console.error("❌ 로그인 상태 확인 실패:", error);
+        });
+    }
+
+
+        function logout() {
+            fetch("/auth/logout", { method: "POST", credentials: "include" })
+            .then(() => {
+                alert("로그아웃 되었습니다.");
+                window.location.href = "/auth/login";
+            })
+            .catch(error => alert("로그아웃 실패: " + error.message));
+        }
+
+        window.onload = checkLoginStatus;
+    </script>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">홈</a></li>
+            <li><a href="/auth/signup" id="signupButton">회원가입</a></li>
+            <li><a href="/auth/login" id="loginButton">로그인</a></li>
+            <li><button id="logoutButton" onclick="logout()" style="display: none;">로그아웃</button></li>
+            <li><a href="/user/profile" id="profileButton" style="display: none;">내 정보</a></li>
+            <li><a href="/admin/user-management" id="adminButton" style="display: none;">사용자 관리</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

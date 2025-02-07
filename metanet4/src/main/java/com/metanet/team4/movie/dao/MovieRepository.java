@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import com.metanet.team4.movie.model.Likes;
 import com.metanet.team4.movie.model.Movie;
 import com.metanet.team4.movie.model.MovieMemberForChart;
 
@@ -137,7 +136,5 @@ public class MovieRepository implements IMovieRepository {
 	   return jdbcTemplate.query(sql, new MovieMapper(), memberId);
 	      
 	}
-
-
 
 }

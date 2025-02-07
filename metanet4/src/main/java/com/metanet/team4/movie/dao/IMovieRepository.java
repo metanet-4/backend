@@ -1,5 +1,4 @@
 package com.metanet.team4.movie.dao;
-
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -15,4 +14,5 @@ public interface IMovieRepository {
 	void addLike(String memberId, String movieId);
 	void removeLike(String memberId, String movieId);
 	List<Movie> getLikedMovies(String memberId);
+
 }

@@ -13,9 +13,12 @@ import com.metanet.team4.mypage.model.MypageResponse;
 import com.metanet.team4.mypage.model.ReserveList;
 import com.metanet.team4.mypage.service.IMypageService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @RestController
 @RequestMapping("/mypage")
+@Tag(name="Mypage", description="mypage")
 public class MypageController {
 
 	@Autowired
