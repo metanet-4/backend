@@ -1,6 +1,7 @@
 package com.metanet.team4.payment.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +16,6 @@ import com.metanet.team4.payment.model.PaymentResponseDto;
 import com.metanet.team4.payment.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
-
 @RestController 
 @RequestMapping("/payment")
 @RequiredArgsConstructor
@@ -30,6 +30,8 @@ public class PaymentController {
      */
     @PostMapping
     public ResponseEntity<PaymentResponseDto> requestPayment(@RequestBody PaymentRequestDto request, @Login Member member) {
+    	System.out.println("결제 요청 api 호출");
+    	System.out.println("PaymentRequestDto : " + request);
         PaymentResponseDto response = paymentService.processPayment(request, member);
         return ResponseEntity.ok(response);
     }

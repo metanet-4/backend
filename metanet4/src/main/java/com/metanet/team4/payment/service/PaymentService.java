@@ -46,6 +46,8 @@ public class PaymentService {
     	
     	reservationRepository.insertReservation(reservation);
     	
+    	System.out.println("예매 정보 저장");
+    	
         PaymentResponseDto response = new PaymentResponseDto();
         response.setReceiptId("test-receipt-id"); // 실제 부트페이 API를 사용하면 여기서 받은 영수증 ID를 저장
         response.setStatus("SUCCESS");
