@@ -29,7 +29,7 @@ public class MovieController {
 	@Autowired
 	MovieListService movieListService;
 
-	@GetMapping("/{movieId}")
+	@GetMapping("/detail/{movieId}")
 	public MovieDetailResponse MovieDetail(@PathVariable("movieId") String movieId) {
 		Movie movie = movieService.selectMovie(movieId);
 		MovieMemberForChart movieMemberForChart = movieService.countForChart(movieId);
@@ -37,7 +37,7 @@ public class MovieController {
 	    return new MovieDetailResponse(movie, movieMemberForChart, isLiked);
 	}
 	
-	@PostMapping("/{movieId}")
+	@PostMapping("/detail/{movieId}")
     public ResponseEntity<String> toggleLike(@PathVariable String movieId) {
         String memberId="aaa";
 		boolean isLiked = movieService.isLiked(memberId, movieId);
