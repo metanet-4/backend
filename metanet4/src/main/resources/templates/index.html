@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8"/>
+    <title>홈페이지</title>
 </head>
 <body>
-Hello
+    <div th:replace="~{navbar}"></div>  <!-- ✅ 네비게이션 바 포함 -->
+
+    <h1>홈페이지</h1>
+    <p>환영합니다!</p>
 </body>
 </html>
