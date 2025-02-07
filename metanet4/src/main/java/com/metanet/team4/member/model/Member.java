@@ -18,8 +18,10 @@ public class Member {
     private String email;
     private Date birthday;
     private Integer gender;
-    private String image; // 프로필 사진 (파일 경로 저장)
-    private String disabilityCertificate; // 장애인 인증서 이미지 파일 경로
+    
+    private byte[] image; // ✅ BLOB 타입은 byte[]로 변경
+    private byte[] disabilityCertificate; // ✅ BLOB 타입은 byte[]로 변경
+
     private Integer isDiscounted = 0;  // 🎯 기본값 0 (일반 사용자), 관리자가 승인하면 1로 변경
     private String role;
 }

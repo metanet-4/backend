@@ -4,6 +4,10 @@ import com.metanet.team4.member.mapper.MemberMapper;
 import com.metanet.team4.member.model.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -22,8 +26,22 @@ public class AdminService {
     /**
      * ✅ 장애인 인증서 조회 (관리자 전용)
      */
-    public String getDisabilityCertificate(String userId) {
-        return memberMapper.getDisabilityCertificate(userId);
+    public byte[] getDisabilityCertificate(String userId) {
+        InputStream inputStream = memberMapper.getDisabilityCertificate(userId);
+        if (inputStream == null) {
+            return new byte[0];  // ✅ NULL 방지
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();  // ✅ InputStream을 byte[]로 변환
+        } catch (IOException e) {
+            throw new RuntimeException("장애인 인증서 변환 오류", e);
+        }
     }
 
     /**

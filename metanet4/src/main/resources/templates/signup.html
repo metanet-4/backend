@@ -4,14 +4,55 @@
     <meta charset="UTF-8"/>
     <title>회원가입</title>
     <script>
+        async function checkUserId() {
+            const userId = document.getElementById("userId").value;
+            if (!userId) return;
+
+            const response = await fetch(`/auth/check-userId?userId=${userId}`);
+            const isDuplicate = await response.json();
+
+            const userIdMsg = document.getElementById("userIdMsg");
+            if (isDuplicate) {
+                userIdMsg.textContent = "이미 존재하는 아이디입니다.";
+                userIdMsg.style.color = "red";
+            } else {
+                userIdMsg.textContent = "사용 가능한 아이디입니다.";
+                userIdMsg.style.color = "green";
+            }
+        }
+
+        async function checkPhone() {
+            const phone = document.getElementById("phone").value;
+            if (!phone) return;
+
+            const response = await fetch(`/auth/check-phone?phone=${phone}`);
+            const isDuplicate = await response.json();
+
+            const phoneMsg = document.getElementById("phoneMsg");
+            if (isDuplicate) {
+                phoneMsg.textContent = "이미 등록된 전화번호입니다.";
+                phoneMsg.style.color = "red";
+            } else {
+                phoneMsg.textContent = "사용 가능한 전화번호입니다.";
+                phoneMsg.style.color = "green";
+            }
+        }
+
         function submitSignup(event) {
             event.preventDefault();
 
             const password = document.getElementById("password").value;
             const password2 = document.getElementById("password2").value;
+            const userIdMsg = document.getElementById("userIdMsg").textContent;
+            const phoneMsg = document.getElementById("phoneMsg").textContent;
 
             if (password !== password2) {
                 alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+
+            if (userIdMsg.includes("이미 존재하는") || phoneMsg.includes("이미 등록된")) {
+                alert("아이디 또는 전화번호가 중복되었습니다. 다시 확인해주세요.");
                 return;
             }
 
@@ -42,7 +83,8 @@
     <h1>회원가입</h1>
     <form id="signupForm" onsubmit="submitSignup(event)" enctype="multipart/form-data">
         <label>아이디:</label>
-        <input type="text" name="userId" id="userId" required/><br>
+        <input type="text" name="userId" id="userId" required onblur="checkUserId()"/>
+        <span id="userIdMsg"></span><br>
 
         <label>이름:</label>
         <input type="text" name="name" id="name" required/><br>
@@ -54,7 +96,8 @@
         <input type="password" name="password2" id="password2" required/><br>
 
         <label>전화번호:</label>
-        <input type="text" name="phone" id="phone" required/><br>
+        <input type="text" name="phone" id="phone" required onblur="checkPhone()"/>
+        <span id="phoneMsg"></span><br>
 
         <label>이메일:</label>
         <input type="email" name="email" id="email" required/><br>
