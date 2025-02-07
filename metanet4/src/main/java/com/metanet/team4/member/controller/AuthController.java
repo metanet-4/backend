@@ -27,13 +27,34 @@ public class AuthController {
     /**
      * ✅ 회원가입
      */
+    /**
+     * ✅ 아이디 중복 확인 API
+     */
+    @GetMapping("/check-userId")
+    public ResponseEntity<Boolean> checkUserId(@RequestParam String userId) {
+        boolean isDuplicate = memberService.isUserIdDuplicate(userId);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    /**
+     * ✅ 전화번호 중복 확인 API
+     */
+    @GetMapping("/check-phone")
+    public ResponseEntity<Boolean> checkPhone(@RequestParam String phone) {
+        boolean isDuplicate = memberService.isPhoneDuplicate(phone);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    /**
+     * ✅ 회원가입 API
+     */
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@ModelAttribute SignupRequest request) {
         try {
             memberService.registerUser(request);
-            return ResponseEntity.ok("회원가입 성공");
+            return ResponseEntity.ok("회원가입이 완료되었습니다.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

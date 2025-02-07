@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/user")
@@ -89,13 +90,15 @@ public class UserController {
     @GetMapping("/certificate")
     public ResponseEntity<String> getDisabilityCertificate(HttpServletRequest httpRequest) {
         String userId = getUserIdFromRequest(httpRequest);
-        String certificate = userService.getDisabilityCertificate(userId);
+        byte[] certificateBytes = userService.getDisabilityCertificate(userId);
 
-        if (certificate == null || certificate.isEmpty()) {
+        if (certificateBytes == null || certificateBytes.length == 0) {
             return ResponseEntity.ok("등록된 장애인 인증서가 없습니다.");
         }
 
-        return ResponseEntity.ok(certificate);
+        // ✅ Base64 인코딩하여 반환
+        String encodedCertificate = Base64.getEncoder().encodeToString(certificateBytes);
+        return ResponseEntity.ok(encodedCertificate);
     }
 
     /**

@@ -6,6 +6,9 @@ import com.metanet.team4.member.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Base64;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,9 +38,14 @@ public class UserPageController {
         Member member = userService.getUserInfo(userId);
         model.addAttribute("member", member);
 
-        // ✅ 장애인 인증서 정보 추가
-        String certificate = userService.getDisabilityCertificate(userId);
-        model.addAttribute("disabilityCertificate", certificate);
+        // ✅ 장애인 인증서 BLOB 데이터를 Base64로 변환하여 이미지로 전달
+        byte[] certificateBytes = userService.getDisabilityCertificate(userId);
+        if (certificateBytes == null || certificateBytes.length == 0) {
+            model.addAttribute("disabilityCertificate", null);
+        } else {
+            String encodedCertificate = "data:image/png;base64," + Base64.getEncoder().encodeToString(certificateBytes);
+            model.addAttribute("disabilityCertificate", encodedCertificate);
+        }
 
         return "profile";
     }
@@ -88,12 +96,14 @@ public class UserPageController {
             return "redirect:/auth/login";
         }
 
-        String certificate = userService.getDisabilityCertificate(userId);
-        if (certificate == null || certificate.isEmpty()) {
-            model.addAttribute("message", "등록된 장애인 인증서가 없습니다.");
+        byte[] certificateBytes = userService.getDisabilityCertificate(userId);
+        if (certificateBytes.length == 0) {
+            model.addAttribute("disabilityCertificate", null);  // ✅ NULL 방지
         } else {
-            model.addAttribute("certificate", certificate);
+            String encodedCertificate = "data:image/png;base64," + Base64.getEncoder().encodeToString(certificateBytes);
+            model.addAttribute("disabilityCertificate", encodedCertificate);
         }
+
 
         return "certificate";
     }
