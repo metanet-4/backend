@@ -30,8 +30,6 @@ public class PaymentController {
      */
     @PostMapping
     public ResponseEntity<PaymentResponseDto> requestPayment(@RequestBody PaymentRequestDto request, @Login Member member) {
-    	System.out.println("결제 요청 api 호출");
-    	System.out.println("PaymentRequestDto : " + request);
         PaymentResponseDto response = paymentService.processPayment(request, member);
         return ResponseEntity.ok(response);
     }
