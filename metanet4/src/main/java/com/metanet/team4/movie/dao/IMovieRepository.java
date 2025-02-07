@@ -9,8 +9,8 @@ import com.metanet.team4.movie.model.MovieMemberForChart;
 
 @Repository
 public interface IMovieRepository {
-	Movie SelectMovie(String id);
-	MovieMemberForChart CountForChart(String id);
+	Movie selectMovie(String id);
+	MovieMemberForChart countForChart(String id);
 	Boolean isLiked(String memberId, String movieId);
 	void addLike(String memberId, String movieId);
 	void removeLike(String memberId, String movieId);

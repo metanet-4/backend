@@ -36,7 +36,6 @@ public class MypageRepository implements IMypageRepository {
 	    @Override
 	    public ReserveList mapRow(ResultSet rs, int rowNum) throws SQLException {
 	        ReserveList reserveList = new ReserveList();
-
 	        reserveList.setUserId(rs.getString("userId"));
 	        reserveList.setTicketStatus(rs.getInt("ticketStatus"));
 	        reserveList.setMovieTitle(rs.getString("movieTitle"));
@@ -48,7 +47,6 @@ public class MypageRepository implements IMypageRepository {
 	        reserveList.setReservationCode(rs.getInt("reservationCode"));
 	        reserveList.setReservationTime(rs.getDate("reservationTime"));
 	        reserveList.setPaymentAmount(rs.getInt("paymentAmount"));
-
 	        return reserveList;
 	    }
 	}

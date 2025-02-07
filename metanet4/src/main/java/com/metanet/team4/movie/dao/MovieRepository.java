@@ -58,32 +58,19 @@ public class MovieRepository implements IMovieRepository {
 			movie.setAge60th(rs.getInt("age60th"));
 			movie.setAge70th(rs.getInt("age70th"));
 			movie.setAge80th(rs.getInt("age80th"));
-			// ✅ 디버깅용 로그 추가
-		    System.out.println("🎬 MovieMemberForChartMapper: " + movie);
-
 			return movie;
 		}
 	}
 	
-	private class LikesMapper implements RowMapper<Likes>{
-		@Override
-		public Likes mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Likes like = new Likes();
-			like.setMemberId(rs.getString("member_id"));
-			like.setMovieId(rs.getString("movie_id"));
-			return like;
-		}
-	}
-	
 	@Override
-	public Movie SelectMovie(String id) {
+	public Movie selectMovie(String id) {
 		String sql="select id, krname, enname, directors, actors, release_date, open_yn, main_image, description, total_audience, like_count, nation, show_time, watch_grade "
 				+ "from movie where id=?";
 		return jdbcTemplate.queryForObject(sql, new MovieMapper(), id);
 	}
 
 	@Override
-	public MovieMemberForChart CountForChart(String id) {
+	public MovieMemberForChart countForChart(String id) {
 		String sql="SELECT "
 				+ "    p.movie_id, "
 				+ "		NVL(COUNT(CASE WHEN m.gender = 1 THEN 1 END), 0) AS man, "
@@ -104,7 +91,6 @@ public class MovieRepository implements IMovieRepository {
 		 try {
 		        return jdbcTemplate.queryForObject(sql, new MovieMemberForChartMapper(), id);
 		    } catch (EmptyResultDataAccessException e) {
-		        // 예외가 발생하면 기본 값으로 채운 객체 반환
 		        MovieMemberForChart defaultResult = new MovieMemberForChart();
 		        defaultResult.setMan(0);
 		        defaultResult.setWoman(0);

@@ -18,7 +18,6 @@ import com.metanet.team4.movie.service.IMovieService;
 
 @RestController
 @RequestMapping("/movie")
-@CrossOrigin(origins = "http://localhost:3000")
 public class MovieController {
 	
 	@Autowired
@@ -26,12 +25,9 @@ public class MovieController {
 
 	@GetMapping("/{movieId}")
 	public MovieDetailResponse MovieDetail(@PathVariable("movieId") String movieId) {
-		Movie movie = movieService.SelectMovie(movieId);
-		System.out.println(movie);
-		MovieMemberForChart movieMemberForChart = movieService.CountForChart(movieId);
-		System.out.println(movieMemberForChart);
+		Movie movie = movieService.selectMovie(movieId);
+		MovieMemberForChart movieMemberForChart = movieService.countForChart(movieId);
 		Boolean isLiked = movieService.isLiked("aaa", movieId);
-		System.out.println(isLiked);
 	    return new MovieDetailResponse(movie, movieMemberForChart, isLiked);
 	}
 	
@@ -52,7 +48,6 @@ public class MovieController {
 	public List<Movie> getLikedMovies() {
 		String memberId="aaa";
 		List<Movie> movies = movieService.getLikedMovies(memberId);
-        System.out.println(movies);
 		return movies;
     }
 }

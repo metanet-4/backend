@@ -16,13 +16,13 @@ public class MovieService implements IMovieService {
 	IMovieRepository movieRepository;
 	
 	@Override
-	public Movie SelectMovie(String id) {
-		return movieRepository.SelectMovie(id);
+	public Movie selectMovie(String id) {
+		return movieRepository.selectMovie(id);
 	}
 
 	@Override
-	public MovieMemberForChart CountForChart(String id) {
-		return movieRepository.CountForChart(id);
+	public MovieMemberForChart countForChart(String id) {
+		return movieRepository.countForChart(id);
 	}
 
 	@Override

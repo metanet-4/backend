@@ -16,7 +16,6 @@ import com.metanet.team4.mypage.service.IMypageService;
 
 @RestController
 @RequestMapping("/mypage")
-@CrossOrigin(origins = "http://localhost:3000")
 public class MypageController {
 
 	@Autowired
@@ -27,10 +26,7 @@ public class MypageController {
 		String memberId = "aaa";
 		MypageMember mypageMember = mypageService.getMypageMember(memberId);
 		List<ReserveList> reserveList = mypageService.getReserveList(memberId);
-		System.out.println(reserveList);
 		List<ReserveList> cancelList = mypageService.getCancelList(memberId);
-		System.out.println("취소내역");
-		System.out.println(cancelList);
 	    return new MypageResponse(mypageMember, reserveList, cancelList);
 	}
 }
