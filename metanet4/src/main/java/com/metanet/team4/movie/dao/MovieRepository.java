@@ -3,8 +3,10 @@ package com.metanet.team4.movie.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -75,7 +77,7 @@ public class MovieRepository implements IMovieRepository {
 	
 	@Override
 	public Movie SelectMovie(String id) {
-		String sql="select id, krname, enname, directors, actors, release_date, open_yn, main_image, description, total_audience, like_count, nation, show_time, watch_grade\r\n"
+		String sql="select id, krname, enname, directors, actors, release_date, open_yn, main_image, description, total_audience, like_count, nation, show_time, watch_grade "
 				+ "from movie where id=?";
 		return jdbcTemplate.queryForObject(sql, new MovieMapper(), id);
 	}
@@ -99,7 +101,23 @@ public class MovieRepository implements IMovieRepository {
 				+ "JOIN member m ON r.member_id = m.id "
 				+ "WHERE p.movie_id=? "
 				+ "GROUP BY p.movie_id";
-		return jdbcTemplate.queryForObject(sql, new MovieMemberForChartMapper(), id);
+		 try {
+		        return jdbcTemplate.queryForObject(sql, new MovieMemberForChartMapper(), id);
+		    } catch (EmptyResultDataAccessException e) {
+		        // 예외가 발생하면 기본 값으로 채운 객체 반환
+		        MovieMemberForChart defaultResult = new MovieMemberForChart();
+		        defaultResult.setMan(0);
+		        defaultResult.setWoman(0);
+		        defaultResult.setAge10th(0);
+		        defaultResult.setAge20th(0);
+		        defaultResult.setAge30th(0);
+		        defaultResult.setAge40th(0);
+		        defaultResult.setAge50th(0);
+		        defaultResult.setAge60th(0);
+		        defaultResult.setAge70th(0);
+		        defaultResult.setAge80th(0);
+		        return defaultResult;
+		    }
 	}
 
 	@Override
@@ -113,16 +131,26 @@ public class MovieRepository implements IMovieRepository {
 	}
 
 	@Override
-	public void addLike(String userId, String movieId) {
+	public void addLike(String memberId, String movieId) {
         String sql = "INSERT INTO likes (id, member_id, movie_id) VALUES (like_seq.nextval, (SELECT id FROM member WHERE user_id = ?), ?)";
-        jdbcTemplate.update(sql, userId, movieId);
+        jdbcTemplate.update(sql, memberId, movieId);
     }
 
     @Override
-    public void removeLike(String userId, String movieId) {
+    public void removeLike(String memberId, String movieId) {
         String sql = "DELETE FROM likes WHERE member_id = (SELECT id FROM member WHERE user_id = ?) AND movie_id = ?";
-        jdbcTemplate.update(sql, userId, movieId);
+        jdbcTemplate.update(sql, memberId, movieId);
     }
+
+	@Override
+	public List<Movie> getLikedMovies(String memberId) {
+		String sql = "select m.id, m.krname, m.enname, m.directors, m.actors, m.release_date, m.open_yn, m.main_image, m.description, m.total_audience, m.like_count, m.nation, m.show_time, m.watch_grade " +
+                "FROM likes l " +
+                "JOIN movie m ON l.movie_id = m.id " +
+                "WHERE l.member_id = (SELECT id FROM member WHERE user_id = ?)";
+	   return jdbcTemplate.query(sql, new MovieMapper(), memberId);
+	      
+	}
 
 
 

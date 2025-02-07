@@ -1,5 +1,7 @@
 package com.metanet.team4.movie;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,7 +18,7 @@ import com.metanet.team4.movie.service.IMovieService;
 
 @RestController
 @RequestMapping("/movie")
-@CrossOrigin(origins = "http://localhost:5174")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MovieController {
 	
 	@Autowired
@@ -36,9 +38,7 @@ public class MovieController {
 	@PostMapping("/{movieId}")
     public ResponseEntity<String> toggleLike(@PathVariable String movieId) {
         String memberId="aaa";
-		
 		boolean isLiked = movieService.isLiked(memberId, movieId);
-
         if (isLiked) {
             movieService.removeLike(memberId, movieId);
             return ResponseEntity.ok("좋아요 취소됨");
@@ -46,5 +46,13 @@ public class MovieController {
             movieService.addLike(memberId, movieId);
             return ResponseEntity.ok("좋아요 추가됨");
         }
+    }
+	
+	@GetMapping("/likeList")
+	public List<Movie> getLikedMovies() {
+		String memberId="aaa";
+		List<Movie> movies = movieService.getLikedMovies(memberId);
+        System.out.println(movies);
+		return movies;
     }
 }

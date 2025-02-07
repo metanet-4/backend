@@ -1,5 +1,7 @@
 package com.metanet.team4.movie.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,11 @@ public class MovieService implements IMovieService {
 	public String removeLike(String memberId, String movieId) {
 		movieRepository.removeLike(memberId, movieId);
 		return "좋아요 삭제됨";
+	}
+
+	@Override
+	public List<Movie> getLikedMovies(String memberId) {
+		return movieRepository.getLikedMovies(memberId);
 	}
 
 }
