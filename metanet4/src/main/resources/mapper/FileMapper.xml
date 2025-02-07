@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.metanet.team4.file.mapper.MemberFileMapper">
+
+    <!-- 프로필 등록 -->
+    <update id="updateProfile">
+        UPDATE member
+        SET image = #{image}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 프로필 조회 -->
+    <select id="getProfile" resultType="byte[]">
+        SELECT image
+        FROM member
+        WHERE id = #{id}
+    </select>
+
+    <!-- 프로필 삭제 -->
+    <update id="deleteProfile">
+        UPDATE member
+        SET image = NULL
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 인증서 등록 -->
+    <update id="uploadCertificate">
+        UPDATE member
+        SET disability_certificate AS disabilityCertificate = #{disabilityCertificate}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 인증서 조회 -->
+    <select id="getCertificate" resultType="byte[]">
+        SELECT disability_certificate AS disabilityCertificate
+        FROM member
+        WHERE id = #{id}
+    </select>
+
+    <!-- 인증서 삭제 -->
+    <update id="deleteCertificate">
+        UPDATE member
+        SET disability_certificate AS disabilityCertificate = NULL
+        WHERE id = #{id}
+    </update>
+
+</mapper>
