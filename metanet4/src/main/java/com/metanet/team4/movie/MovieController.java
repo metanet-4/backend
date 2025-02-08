@@ -65,4 +65,6 @@ public class MovieController {
     public List<Movie> getComingSoonMovies() {
         return movieListService.getComingSoonMovies();
     }
+    
+    
 }

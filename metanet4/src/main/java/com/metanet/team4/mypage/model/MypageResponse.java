@@ -11,5 +11,4 @@ public class MypageResponse {
     private MypageMember mypageMember;
     private List<ReserveList> reserveList;
     private List<ReserveList> cancelList;
-    
 }
