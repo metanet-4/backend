@@ -1,8 +1,10 @@
 package com.metanet.team4.payment.model;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class PaymentRequestDto {
 	
 	private Long playingId;
