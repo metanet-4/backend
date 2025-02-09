@@ -4,18 +4,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,6 +23,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metanet.team4.common.Login;
+import com.metanet.team4.jwt.JwtAuthenticationFilter;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.model.PaymentRequestDto;
 import com.metanet.team4.payment.model.PaymentResponseDto;
@@ -40,6 +38,9 @@ class PaymentControllerTest {
     @MockBean
     private PaymentService paymentService;
 
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    
     @Autowired
     private MockMvc mockMvc;
 

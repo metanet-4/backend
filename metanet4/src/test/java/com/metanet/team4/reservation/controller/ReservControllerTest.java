@@ -25,6 +25,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metanet.team4.common.Login;
+import com.metanet.team4.jwt.JwtAuthenticationFilter;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.model.CancelResponseDto;
 import com.metanet.team4.payment.model.ReservationDetailDto;
@@ -38,6 +39,9 @@ class ReservControllerTest {
 
     @MockBean
     private ReservService reservService;
+    
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
     private MockMvc mockMvc;
