@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CancelResponseDto {
-    private String receiptId;
     private String status; // 취소 상태 (예: CANCELED, FAILED)
     private String message;
 }
