@@ -65,4 +65,15 @@ public class MovieController {
     public List<Movie> getComingSoonMovies() {
         return movieListService.getComingSoonMovies();
     }
+    
+    @GetMapping("/search/{keyword}")
+    public List<Movie> getSearchMovies(@PathVariable String keyword){
+    	return movieListService.getSearchMovies(keyword);
+    }
+    
+    @GetMapping("/search/{keyword}/count")
+    public int getSearchMoviesCount(@PathVariable String keyword) {
+        return movieListService.getCachedSearchMoviesCount(keyword);
+    }
+    
 }

@@ -137,4 +137,20 @@ public class MovieRepository implements IMovieRepository {
 	      
 	}
 
+	@Override
+	public List<Movie> getSearchMovies(String keyword) {
+		String sql = "select id, krname, enname, directors, actors, release_date, open_yn, main_image, description, total_audience, like_count, nation, show_time, watch_grade "
+				+ "from movie "
+				+ "where upper(krname) like upper(?) or upper(enname) like upper(?)";
+		String searchPattern = "%" + keyword + "%"; // 검색어 포함을 위한 % 추가
+	    return jdbcTemplate.query(sql, new MovieMapper(), searchPattern, searchPattern);
+	}
+
+	@Override
+	public int getSearchMoviesCouont(String keyword) {
+		 String sql = "SELECT COUNT(*) FROM Movie WHERE krName LIKE ? OR enName LIKE ?";
+		 String searchPattern = "%" + keyword + "%";
+		 return jdbcTemplate.queryForObject(sql, Integer.class, searchPattern, searchPattern);
+	}
+
 }

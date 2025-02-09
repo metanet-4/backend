@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class ReserveList {
 	private String userId;
+	private String movieId;
 	private int ticketStatus;
 	private String movieTitle;
 	private String mainImage;
