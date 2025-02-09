@@ -1,11 +1,14 @@
 package com.metanet.team4.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +22,6 @@ import com.metanet.team4.jwt.JwtAuthenticationFilter;
 import com.metanet.team4.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
-import java.util.Arrays;
 
 @Configuration
 @EnableMethodSecurity  // ✅ 추가해야 @PreAuthorize가 동작함
@@ -32,6 +34,12 @@ public class SecurityConfig {
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtUtil);
     }
+    
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/ws/**");
+    }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,7 +50,7 @@ public class SecurityConfig {
                 // ✅ 정적 리소스 허용 (JavaScript, CSS, 이미지)
                 .requestMatchers("/js/**", "/css/**", "/images/**", "/favicon.ico").permitAll()
                 // ✅ 인증 없이 접근 가능한 API
-            		.requestMatchers( "/","/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            		.requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
                 .requestMatchers("/health", "/health/db").permitAll()
 
