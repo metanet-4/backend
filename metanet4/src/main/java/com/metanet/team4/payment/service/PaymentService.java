@@ -5,15 +5,12 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.dao.IReservatoinRepository;
-import com.metanet.team4.payment.model.CancelResponseDto;
 import com.metanet.team4.payment.model.PaymentRequestDto;
 import com.metanet.team4.payment.model.PaymentResponseDto;
 import com.metanet.team4.payment.model.Reservation;
-import com.metanet.team4.payment.model.ReservationDetailDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,8 +47,7 @@ public class PaymentService {
     	System.out.println("예매 정보 저장");
     	
         PaymentResponseDto response = new PaymentResponseDto();
-        response.setReceiptId("test-receipt-id"); // 실제 부트페이 API를 사용하면 여기서 받은 영수증 ID를 저장
-        response.setStatus("SUCCESS");
+        response.setReceiptId(request.getReceiptId());
         response.setReservationId(reservation.getId());
 
         return response;
