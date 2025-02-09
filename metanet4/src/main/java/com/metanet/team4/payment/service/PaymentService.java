@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.dao.IReservatoinRepository;
@@ -12,10 +13,10 @@ import com.metanet.team4.payment.model.CancelResponseDto;
 import com.metanet.team4.payment.model.PaymentRequestDto;
 import com.metanet.team4.payment.model.PaymentResponseDto;
 import com.metanet.team4.payment.model.Reservation;
+import com.metanet.team4.payment.model.ReservationDetailDto;
 
 import lombok.RequiredArgsConstructor;
 
-//import kr.co.bootpay.javaApache.Bootpay;
 
 @Service
 @RequiredArgsConstructor
@@ -60,34 +61,4 @@ public class PaymentService {
         return Math.abs(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
     }
     
-    
-    public CancelResponseDto cancelPayment(String receiptId) {
-//    	try {
-//            Bootpay bootpay = new Bootpay(bootpayApplicationId, bootpayPrivateKey);
-//            HashMap<String, Object> token = bootpay.getAccessToken();
-//
-//            if (token.get("error_code") != null) { // 토큰 발급 실패
-//                throw new RuntimeException("부트페이 인증 토큰 발급 실패: " + token);
-//            }
-//
-//            // 결제 취소 요청 객체 생성
-//            Cancel cancel = new Cancel();
-//            cancel.receiptId = receiptId;
-//            cancel.cancelUsername = "관리자"; // 필요에 따라 동적으로 변경 가능
-//            cancel.cancelMessage = "사용자 요청에 의한 결제 취소";
-//
-//            // 부트페이 API 호출
-//            HashMap<String, Object> response = bootpay.receiptCancel(cancel);
-//
-//            if (response.get("error_code") == null) { // 성공
-//                return new CancelResponseDto(receiptId, "CANCELED", "결제가 성공적으로 취소되었습니다.");
-//            } else { // 실패
-//                return new CancelResponseDto(receiptId, "FAILED", "결제 취소 실패: " + response.get("message"));
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new CancelResponseDto(receiptId, "FAILED", "결제 취소 중 예외 발생: " + e.getMessage());
-//        }
-    	return null;
-    }
 }
