@@ -1,9 +1,13 @@
 package com.metanet.team4.file.service;
 
-import com.metanet.team4.file.mapper.MemberFileMapper;
-import lombok.RequiredArgsConstructor;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.metanet.team4.file.mapper.MemberFileMapper;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +21,7 @@ public class MemberFileService {
     }
 
     // 프로필 조회
-    public byte[] getProfile(Long id) {
+    public Map<String,Object> getProfile(Long id) {
         return memberFileMapper.getProfile(id);
     }
 
@@ -34,7 +38,7 @@ public class MemberFileService {
     }
 
     // 인증서 조회
-    public byte[] getCertificate(Long id) {
+    public Map<String,Object> getCertificate(Long id) {
         return memberFileMapper.getCertificate(id);
     }
 

@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MemberFile {
+	private Long id;
 	private byte[] image;
 	private byte[] disabilityCertificate;
 }
