@@ -8,4 +8,5 @@ public interface IMovieListService {
 	List<Movie> getBoxOfficeMovies();
 	List<Movie> getComingSoonMovies();
 	List<Movie> getSearchMovies(String keyword);
+	int getSearchMoviesCount(String keyword);
 }

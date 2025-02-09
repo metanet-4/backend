@@ -71,5 +71,9 @@ public class MovieController {
     	return movieListService.getSearchMovies(keyword);
     }
     
+    @GetMapping("/search/{keyword}/count")
+    public int getSearchMoviesCount(@PathVariable String keyword) {
+        return movieListService.getCachedSearchMoviesCount(keyword);
+    }
     
 }

@@ -146,4 +146,11 @@ public class MovieRepository implements IMovieRepository {
 	    return jdbcTemplate.query(sql, new MovieMapper(), searchPattern, searchPattern);
 	}
 
+	@Override
+	public int getSearchMoviesCouont(String keyword) {
+		 String sql = "SELECT COUNT(*) FROM Movie WHERE krName LIKE ? OR enName LIKE ?";
+		 String searchPattern = "%" + keyword + "%";
+		 return jdbcTemplate.queryForObject(sql, Integer.class, searchPattern, searchPattern);
+	}
+
 }
