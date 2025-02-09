@@ -98,11 +98,6 @@
 		    <version>0.11.5</version>  <!-- 🔽 버전 다운그레이드 -->
 		    <scope>runtime</scope>
 		</dependency>
-
-		<dependency>
-	        <groupId>org.springframework.boot</groupId>
-	        <artifactId>spring-boot-starter-thymeleaf</artifactId>
-	    </dependency>
 	    
 	    <dependency>
 		    <groupId>org.springframework.boot</groupId>
@@ -118,6 +113,24 @@
       		<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       		<version>2.5.0</version>
    		</dependency>
+   		
+   		    <!-- JUnit 5 (Jupiter) -->
+	    <dependency>
+	        <groupId>org.junit.jupiter</groupId>
+	        <artifactId>junit-jupiter-api</artifactId>
+	        <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.junit.jupiter</groupId>
+	        <artifactId>junit-jupiter-engine</artifactId>
+	        <scope>test</scope>
+	    </dependency>
+	    
+	    <dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
 
 		
 		<!--<dependency>
