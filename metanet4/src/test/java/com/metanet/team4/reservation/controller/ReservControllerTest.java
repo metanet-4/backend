@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.metanet.team4.jwt.JwtAuthenticationFilter;
+import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.payment.controller.ReservController;
 import com.metanet.team4.payment.model.CancelResponseDto;
 import com.metanet.team4.payment.model.ReservationDetailDto;
@@ -38,6 +39,9 @@ class ReservControllerTest {
 
     @MockBean
     private JwtAuthenticationFilter jwtAuthenticationFilter; 
+    
+    @MockBean 
+    private JwtUtil jwtUtil;
     
     @BeforeEach
     void setup() {

@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metanet.team4.jwt.JwtAuthenticationFilter;
+import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.model.PaymentRequestDto;
 import com.metanet.team4.payment.model.PaymentResponseDto;
@@ -43,6 +44,9 @@ class PaymentControllerTest {
     @MockBean
     private JwtAuthenticationFilter jwtAuthenticationFilter; 
 
+    @MockBean 
+    private JwtUtil jwtUtil;
+    
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
