@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,6 +29,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metanet.team4.common.Login;
+import com.metanet.team4.common.LoginUserArgumentResolver;
+import com.metanet.team4.filter.LoginInterceptor;
+import com.metanet.team4.jwt.JwtAuthenticationFilter;
+import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.controller.ReservController; // 실제 패키지에 맞게 수정
 import com.metanet.team4.payment.model.CancelResponseDto;
@@ -34,7 +40,17 @@ import com.metanet.team4.payment.model.ReservationDetailDto;
 import com.metanet.team4.payment.service.ReservService;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = ReservController.class)
+@WebMvcTest(controllers = ReservController.class, 
+	excludeFilters = {
+	    @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+	        // 이 안에 제외시킬 클래스들 넣기
+	        JwtAuthenticationFilter.class,
+	        JwtUtil.class,
+	        LoginInterceptor.class,
+	    
+	    })
+	}
+)
 @Import(ReservControllerTest.TestConfig.class)
 class ReservControllerTest {
 
