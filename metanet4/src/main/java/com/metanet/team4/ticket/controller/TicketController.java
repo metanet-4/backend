@@ -67,7 +67,7 @@ public class TicketController {
 	}
 	
 	// 3-2. 상영관 선택 후 좌석 선택하는 로직
-	@PostMapping("/seats")
+	@GetMapping("/seats/info")
 	public ResponseEntity<List<TicketResponseDto>> postSeatInfo(@RequestBody TicketRequestDto ticketRequestDto){
 		List<TimeDto> timeList = ticketService.getTimeDtoList(ticketRequestDto.getPlayingId());
 		List<TicketResponseDto> ticketList = ticketService.getSeatInfo(ticketRequestDto, timeList);
