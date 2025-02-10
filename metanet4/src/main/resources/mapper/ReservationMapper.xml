@@ -4,22 +4,46 @@
 
 <mapper namespace="com.metanet.team4.payment.dao.IReservatoinRepository">
 	
-	<select id="getReervationByUserIdAndId" parameterType="map" resultType="com.metanet.team4.payment.model.Reservation">
+	<select id="getReservationByUserIdAndId" parameterType="map" resultMap="reservationResultMap">
 	    SELECT 
-	        ID, 
-	        RESERVATION_CODE, 
-	        RESERVATION_TIME, 
-	        PAYMENT_AMOUNT, 
-	        TICKET_TYPE, 
-	        TICKET_STATUS, 
-	        RECEIPT_ID, 
-	        MEMBER_ID, 
-	        PLAYING_ID
-	    FROM RESERVATION
-	    WHERE MEMBER_ID = #{userId} 
-	   		AND ID = #{reservationId}
+	        r.ID, 
+	        r.RESERVATION_CODE, 
+	        r.RESERVATION_TIME, 
+	        r.PAYMENT_AMOUNT, 
+	        r.TICKET_TYPE, 
+	        r.TICKET_STATUS, 
+	        r.RECEIPT_ID, 
+	        r.MEMBER_ID, 
+	        r.PLAYING_ID,
+	        s.ID AS seat_id, 
+	        s.NAME AS seat_name,
+	        s.PLAYING_ID AS seat_playing_id, 
+	        s.RESERVATION_ID AS seat_reservation_id
+	    FROM RESERVATION r
+	    LEFT JOIN SEAT s ON r.ID = s.RESERVATION_ID
+	    WHERE r.MEMBER_ID = #{userId} 
+	      AND r.ID = #{reservationId}
 	</select>
-
+	
+	<resultMap id="reservationResultMap" type="com.metanet.team4.payment.model.Reservation">
+	    <id property="id" column="ID"/>
+	    <result property="reservationCode" column="RESERVATION_CODE"/>
+	    <result property="reservationTime" column="RESERVATION_TIME"/>
+	    <result property="paymentAmount" column="PAYMENT_AMOUNT"/>
+	    <result property="ticketType" column="TICKET_TYPE"/>
+	    <result property="ticketStatus" column="TICKET_STATUS"/>
+	    <result property="receiptId" column="RECEIPT_ID"/>
+	    <result property="memberId" column="MEMBER_ID"/>
+	    <result property="playingId" column="PLAYING_ID"/>
+	    
+	    <!-- Seat 리스트 매핑 -->
+	    <collection property="seatList" ofType="com.metanet.team4.ticket.model.Seat">
+	        <id property="id" column="seat_id"/>
+	        <result property="name" column="seat_name"/>
+	        <result property="playingId" column="seat_playing_id"/>
+	        <result property="reservationId" column="seat_reservation_id"/>
+	    </collection>
+	</resultMap>
 
 	<insert id="insertReservation" parameterType="com.metanet.team4.payment.model.Reservation">
 		<selectKey keyProperty="id" resultType="Long" order="BEFORE">

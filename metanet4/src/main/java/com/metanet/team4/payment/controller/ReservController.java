@@ -29,8 +29,9 @@ public class ReservController {
     @Operation(summary = "예매 상세 조회", description = "예매 ID를 기반으로 예매 상세 정보를 조회합니다.")
     @GetMapping("/{reservationId}")
     public ResponseEntity<ReservationDetailDto> getReservationDetail(
-            @Parameter(description = "예매 ID", required = true) @PathVariable Long reservationId) {
-        ReservationDetailDto response = reservService.getReservationDetail(reservationId);
+            @Parameter(description = "예매 ID", required = true) @PathVariable Long reservationId,
+            @Parameter(hidden = true) @Login Member member) {
+        ReservationDetailDto response = reservService.getReservationDetail(member.getId(), reservationId);
         return ResponseEntity.ok(response);
     }
 
