@@ -44,7 +44,7 @@ public interface MemberMapper {
     void updateDisabilityCertificate(@Param("userId") String userId, @Param("disabilityCertificate") byte[] disabilityCertificate);
 
     // ✅ 관리자: 우대 여부 승인 (is_discounted = 1로 변경)
-    int approveDiscount(@Param("userId") String userId);
+    int updateDiscountStatus(@Param("userId") String userId, @Param("status") int status);
 
     // ✅ 장애인 인증서 파일 조회 (쿼리는 XML에서 처리)
     InputStream getDisabilityCertificate(@Param("userId") String userId);
