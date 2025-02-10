@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.metanet.team4.payment.dao.IReservatoinRepository">
+	
+	<select id="getReervationByUserIdAndId" parameterType="map" resultType="com.metanet.team4.payment.model.Reservation">
+	    SELECT 
+	        ID, 
+	        RESERVATION_CODE, 
+	        RESERVATION_TIME, 
+	        PAYMENT_AMOUNT, 
+	        TICKET_TYPE, 
+	        TICKET_STATUS, 
+	        RECEIPT_ID, 
+	        MEMBER_ID, 
+	        PLAYING_ID, 
+	        SEAT_ID
+	    FROM RESERVATION
+	    WHERE MEMBER_ID = #{userId} 
+	   		AND ID = #{reservationId}
+	</select>
+
+
+	<insert id="insertReservation" parameterType="com.metanet.team4.payment.model.Reservation">
+		<selectKey keyProperty="id" resultType="Long" order="BEFORE">
+	        SELECT RESERVATION_SEQ.NEXTVAL FROM DUAL
+	    </selectKey>
+	    INSERT INTO RESERVATION (
+	    	ID,
+	        RESERVATION_CODE, 
+	        RESERVATION_TIME, 
+	        PAYMENT_AMOUNT, 
+	        TICKET_TYPE, 
+	        TICKET_STATUS, 
+	        RECEIPT_ID, 
+	        MEMBER_ID, 
+	        PLAYING_ID, 
+	        SEAT_ID
+	    ) VALUES (
+	        #{id},
+	        #{reservationCode}, 
+	        #{reservationTime, jdbcType=TIMESTAMP}, 
+	        #{paymentAmount}, 
+	        #{ticketType, jdbcType=VARCHAR}, 
+	        #{ticketStatus}, 
+	        #{receiptId}, 
+	        #{memberId}, 
+	        #{playingId}, 
+	        #{seatId}
+	    )
+	</insert>
+
+	<!-- 예매 상세 정보 조회 -->
+    <select id="getReservationDetail" parameterType="Long" 
+            resultType="com.metanet.team4.payment.model.ReservationDetailDto">
+        SELECT 
+            m.watch_grade         AS watchGrade,
+            m.krName             AS krName,
+            p.playing_date       AS playingDate,
+            p.start_time         AS startTime,
+            p.end_time           AS endTime,
+            c.name               AS cinemaName,
+            sc.name              AS screenName,
+            st.name              AS seatName,
+            r.ticket_type        AS ticketType,
+            r.reservation_code   AS reservationCode
+        FROM Reservation r
+             JOIN playing p  ON r.playing_id = p.id
+             JOIN screen sc  ON p.screen_id = sc.id
+             JOIN cinema c   ON sc.cinema_id = c.id
+             JOIN movie m    ON p.movie_id = m.id
+             JOIN seat st    ON r.seat_id = st.id
+        WHERE r.id = #{reservationId}
+    </select>
+
+	<update id="updateTicketStatus" parameterType="map">
+	    UPDATE RESERVATION
+	    SET TICKET_STATUS = #{ticketStatus}
+	    WHERE ID = #{reservationId}
+	</update>
+
+	
+</mapper>

@@ -14,5 +14,6 @@ public interface IMovieRepository {
 	void addLike(String memberId, String movieId);
 	void removeLike(String memberId, String movieId);
 	List<Movie> getLikedMovies(String memberId);
-
+	List<Movie> getSearchMovies(String keyword);
+	int getSearchMoviesCouont(String keyword);
 }

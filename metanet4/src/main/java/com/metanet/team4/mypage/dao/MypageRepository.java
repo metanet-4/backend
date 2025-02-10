@@ -49,6 +49,7 @@ public class MypageRepository implements IMypageRepository {
 	    public ReserveList mapRow(ResultSet rs, int rowNum) throws SQLException {
 	        ReserveList reserveList = new ReserveList();
 	        reserveList.setUserId(rs.getString("userId"));
+	        reserveList.setMovieId(rs.getString("movieId"));
 	        reserveList.setTicketStatus(rs.getInt("ticketStatus"));
 	        reserveList.setMovieTitle(rs.getString("movieTitle"));
 	        reserveList.setMainImage(rs.getString("mainImage"));
@@ -76,6 +77,7 @@ public class MypageRepository implements IMypageRepository {
 	public List<ReserveList> getReserveList(String memberId) {
 		String sql = "SELECT "
 				+ "    m.user_id AS userId, "
+				+ "	   mv.id AS movieId, "
 				+ "    r.ticket_status AS ticketStatus, "
 				+ "    mv.krName AS movieTitle, "
 				+ "    mv.main_image AS mainImage, "
@@ -101,6 +103,7 @@ public class MypageRepository implements IMypageRepository {
 	public List<ReserveList> getCancelList(String memberId) {
 		String sql = "SELECT "
 				+ "    m.user_id AS userId, "
+				+ "	   mv.id AS movieId, "
 				+ "    r.ticket_status AS ticketStatus, "
 				+ "    mv.krName AS movieTitle, "
 				+ "    mv.main_image AS mainImage, "
