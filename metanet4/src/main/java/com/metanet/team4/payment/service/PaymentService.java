@@ -40,7 +40,7 @@ public class PaymentService {
     	
     	reservation.setMemberId(member.getId());
     	reservation.setPlayingId(request.getPlayingId());
-    	reservation.setSeatId(1L); // todo 생성하고 넣는걸로 수정 해야함
+    	reservation.setSeatId(1L); // Todo 생성하고 넣는걸로 수정 해야함
     	
     	reservationRepository.insertReservation(reservation);
     	

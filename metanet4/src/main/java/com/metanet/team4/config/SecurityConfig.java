@@ -1,14 +1,11 @@
 package com.metanet.team4.config;
 
-import java.util.Arrays;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +19,7 @@ import com.metanet.team4.jwt.JwtAuthenticationFilter;
 import com.metanet.team4.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
 
 @Configuration
 @EnableMethodSecurity  // ✅ 추가해야 @PreAuthorize가 동작함
@@ -34,12 +32,6 @@ public class SecurityConfig {
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(jwtUtil);
     }
-    
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/ws/**");
-    }
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,14 +41,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // ✅ 정적 리소스 허용 (JavaScript, CSS, 이미지)
                 .requestMatchers("/js/**", "/css/**", "/images/**", "/favicon.ico").permitAll()
-                // ✅ 인증 없이 접근 가능한 API
-            		.requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // ✅ 인증 없이 접근 가능한 API 추가
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
+                .requestMatchers("/auth/send-code", "/auth/verify-code").permitAll() // ✅ 이메일 인증 API 허용
                 .requestMatchers("/health", "/health/db").permitAll()
 
                 // ✅ OPTIONS 요청을 명시적으로 허용 (CORS 문제 해결)
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                
+
                 // ✅ 관리자 전용 API
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
@@ -74,6 +67,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     /**
      * ✅ CORS 설정

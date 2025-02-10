@@ -38,6 +38,50 @@
             }
         }
 
+        async function sendAuthCode() {
+            const email = document.getElementById("email").value;
+            if (!email) {
+                alert("이메일을 입력해주세요.");
+                return;
+            }
+
+            const response = await fetch(`/auth/send-code?email=${email}`, {
+                method: "POST",
+                mode: "cors", // ✅ CORS 요청 허용
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            
+            if (response.ok) {
+                document.getElementById("emailMsg").textContent = "인증번호가 이메일로 전송되었습니다.";
+                document.getElementById("emailMsg").style.color = "green";
+            } else {
+                document.getElementById("emailMsg").textContent = "이메일 전송 실패.";
+                document.getElementById("emailMsg").style.color = "red";
+            }
+        }
+
+        async function verifyAuthCode() {
+            const email = document.getElementById("email").value;
+            const authCode = document.getElementById("authCode").value;
+            if (!authCode) {
+                alert("인증번호를 입력해주세요.");
+                return;
+            }
+
+            const response = await fetch(`/auth/verify-code?email=${email}&authCode=${authCode}`, { method: "POST" });
+            const isValid = await response.json();
+
+            if (isValid) {
+                document.getElementById("authCodeMsg").textContent = "인증 성공!";
+                document.getElementById("authCodeMsg").style.color = "green";
+            } else {
+                document.getElementById("authCodeMsg").textContent = "잘못된 인증번호입니다.";
+                document.getElementById("authCodeMsg").style.color = "red";
+            }
+        }
+
         function submitSignup(event) {
             event.preventDefault();
 
@@ -45,6 +89,7 @@
             const password2 = document.getElementById("password2").value;
             const userIdMsg = document.getElementById("userIdMsg").textContent;
             const phoneMsg = document.getElementById("phoneMsg").textContent;
+            const authCodeMsg = document.getElementById("authCodeMsg").textContent;
 
             if (password !== password2) {
                 alert("비밀번호가 일치하지 않습니다.");
@@ -53,6 +98,11 @@
 
             if (userIdMsg.includes("이미 존재하는") || phoneMsg.includes("이미 등록된")) {
                 alert("아이디 또는 전화번호가 중복되었습니다. 다시 확인해주세요.");
+                return;
+            }
+
+            if (!authCodeMsg.includes("인증 성공")) {
+                alert("이메일 인증을 완료해주세요.");
                 return;
             }
 
@@ -100,7 +150,14 @@
         <span id="phoneMsg"></span><br>
 
         <label>이메일:</label>
-        <input type="email" name="email" id="email" required/><br>
+        <input type="email" name="email" id="email" required/>
+        <button type="button" onclick="sendAuthCode()">인증번호 전송</button>
+        <span id="emailMsg"></span><br>
+
+        <label>인증번호:</label>
+        <input type="text" id="authCode" required/>
+        <button type="button" onclick="verifyAuthCode()">인증번호 확인</button>
+        <span id="authCodeMsg"></span><br>
 
         <label>생년월일:</label>
         <input type="date" name="birthday" id="birthday" required/><br>

@@ -22,6 +22,7 @@ public class MemberService {
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RedisService redisService;
 
     
     public boolean isUserIdDuplicate(String userId) {
@@ -41,6 +42,12 @@ public class MemberService {
     public String registerUser(SignupRequest request) {
         if (!request.getPassword().equals(request.getPassword2())) {
             throw new RuntimeException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+        
+     // ✅ 이메일 인증 확인
+        String storedCode = redisService.getAuthCode(request.getEmail());
+        if (storedCode != null) {
+            throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
         }
 
         // ✅ 아이디 중복 검사
