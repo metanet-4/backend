@@ -1,6 +1,5 @@
 package com.metanet.team4.reservation.controller;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,19 +18,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metanet.team4.common.CommonLoginTestConfig;
 import com.metanet.team4.jwt.JwtAuthenticationFilter;
-import com.metanet.team4.payment.model.CancelResponseDto;
+import com.metanet.team4.payment.dao.IReservatoinRepository;
+import com.metanet.team4.payment.model.Reservation;
 import com.metanet.team4.payment.model.ReservationDetailDto;
-import com.metanet.team4.payment.service.ReservService; 
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
 @Import(CommonLoginTestConfig.class)
 class ReservControllerTest {
 
+    // Service는 실제 Bean 사용
+    // 대신 Repository만 Mock
     @MockBean
-    private ReservService reservService;
-    
+    private IReservatoinRepository repository;
+
     @MockBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -49,7 +50,7 @@ class ReservControllerTest {
         detailDto.setScreenName("1관");
         detailDto.setTicketType("일반");
 
-        Mockito.when(reservService.getReservationDetail(1L))
+        Mockito.when(repository.getReservationDetail(1L))
                .thenReturn(detailDto);
 
         // when & then
@@ -60,10 +61,17 @@ class ReservControllerTest {
     @Test
     void cancelPaymentTest() throws Exception {
         // given
-        CancelResponseDto cancelResponse = new CancelResponseDto("CANCELED", "예매가 취소되었습니다.");
+        
+        // 1) 예약 조회 Mock
+        Reservation mockReservation = new Reservation();
+        mockReservation.setId(1L);
+        mockReservation.setMemberId(999L);
+        Mockito.when(repository.getReervationByUserIdAndId(999L, 1L))
+               .thenReturn(mockReservation);
 
-        Mockito.when(reservService.cancelReservation(eq(999L), eq(1L)))
-               .thenReturn(cancelResponse);
+        // 2) 티켓 상태 업데이트 Mock
+        Mockito.when(repository.updateTicketStatus(1L, 0))
+               .thenReturn(1); // 성공적으로 1건 수정
 
         // when & then
         mockMvc.perform(patch("/ticket/{reservationId}/cancel", 1L))
