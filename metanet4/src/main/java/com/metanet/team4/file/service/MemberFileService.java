@@ -21,6 +21,7 @@ public class MemberFileService {
     }
 
     // 프로필 조회
+    @Transactional(readOnly = true)
     public Map<String,Object> getProfile(Long id) {
         return memberFileMapper.getProfile(id);
     }
@@ -38,6 +39,7 @@ public class MemberFileService {
     }
 
     // 인증서 조회
+    @Transactional(readOnly = true)
     public Map<String,Object> getCertificate(Long id) {
         return memberFileMapper.getCertificate(id);
     }
