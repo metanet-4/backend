@@ -22,7 +22,7 @@ public class JwtUtil {
     private final RedisService redisService;
     private static SecretKey SECRET_KEY;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:zG9PqXZyU8R5L+7AqPtcX2T5sVfh9hFJw2Nn8Q2vKQ8=}")
     public void setSecretKey(String secret) {
         byte[] keyBytes = Base64.getDecoder().decode(secret);
         SECRET_KEY = Keys.hmacShaKeyFor(keyBytes);
