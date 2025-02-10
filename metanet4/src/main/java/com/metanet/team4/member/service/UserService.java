@@ -57,6 +57,9 @@ public class UserService {
         memberMapper.updateMember(existingMember);
     }
 
+    
+    
+
 
     /**
      * ✅ 프로필 사진 변경
@@ -65,6 +68,26 @@ public class UserService {
         byte[] fileBytes = file.getBytes();
         memberMapper.updateProfilePic(userId, fileBytes);
     }
+    //프로필 사진 조회
+    public byte[] getProfilePic(String userId) {
+        InputStream inputStream = memberMapper.getProfilePic(userId);
+        if (inputStream == null) {
+            return new byte[0];  // ✅ NULL 방지
+        }
+
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();  // ✅ InputStream을 byte[]로 변환
+        } catch (IOException e) {
+            throw new RuntimeException("프로필 사진 변환 오류", e);
+        }
+    }
+
+
 
     /**
      * ✅ 사용자 스스로 회원 탈퇴
@@ -92,5 +115,13 @@ public class UserService {
         } catch (IOException e) {
             throw new RuntimeException("장애인 인증서 변환 오류", e);
         }
+    }
+    
+    /**
+     * ✅ 장애인 인증서 변경 (BLOB 저장)
+     */
+    public void updateDisabilityCertificate(String userId, MultipartFile file) throws IOException {
+        byte[] fileBytes = file.getBytes();
+        memberMapper.updateDisabilityCertificate(userId, fileBytes);
     }
 }

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -45,22 +46,41 @@ public class UserController {
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 
+    //프로필 사진 조회
+    @GetMapping("/profile-pic")
+    public ResponseEntity<byte[]> getProfilePic(HttpServletRequest httpRequest) {
+        String userId = getUserIdFromRequest(httpRequest);
+        byte[] profileImage = userService.getProfilePic(userId);
+
+        if (profileImage == null || profileImage.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "image/png")
+                .body(profileImage);
+    }
+
+
     /**
      * ✅ 프로필 사진 변경
      */
     @PutMapping("/profile-pic")
-    public ResponseEntity<String> updateProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest httpRequest) {
+    public ResponseEntity<Map<String, String>> updateProfilePic(@RequestParam("file") MultipartFile file, HttpServletRequest httpRequest) {
         String userId = getUserIdFromRequest(httpRequest);
 
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 비어 있습니다.");
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "파일이 비어 있습니다."));
         }
 
         try {
             userService.updateProfilePic(userId, file);
-            return ResponseEntity.ok("프로필 사진이 변경되었습니다.");
+            return ResponseEntity.ok()
+                    .body(Map.of("message", "프로필 사진이 변경되었습니다."));
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("파일 업로드 실패: " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .body(Map.of("message", "파일 업로드 실패: " + e.getMessage()));
         }
     }
 
@@ -88,17 +108,39 @@ public class UserController {
      * ✅ 장애인 인증서 조회
      */
     @GetMapping("/certificate")
-    public ResponseEntity<String> getDisabilityCertificate(HttpServletRequest httpRequest) {
+    public ResponseEntity<byte[]> getDisabilityCertificate(HttpServletRequest httpRequest) {
         String userId = getUserIdFromRequest(httpRequest);
         byte[] certificateBytes = userService.getDisabilityCertificate(userId);
 
         if (certificateBytes == null || certificateBytes.length == 0) {
-            return ResponseEntity.ok("등록된 장애인 인증서가 없습니다.");
+            return ResponseEntity.notFound().build();
         }
 
-        // ✅ Base64 인코딩하여 반환
-        String encodedCertificate = Base64.getEncoder().encodeToString(certificateBytes);
-        return ResponseEntity.ok(encodedCertificate);
+        return ResponseEntity.ok()
+                .header("Content-Type", "image/png")
+                .body(certificateBytes);
+    }
+
+    /**
+     * ✅ 장애인 인증서 변경
+     */
+    @PutMapping("/certificate")
+    public ResponseEntity<Map<String, String>> updateCertificate(@RequestParam("file") MultipartFile file, HttpServletRequest httpRequest) {
+        String userId = getUserIdFromRequest(httpRequest);
+
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "파일이 비어 있습니다."));
+        }
+
+        try {
+            userService.updateDisabilityCertificate(userId, file);
+            return ResponseEntity.ok()
+                    .body(Map.of("message", "장애인 인증서가 변경되었습니다."));
+        } catch (IOException e) {
+            return ResponseEntity.status(500)
+                    .body(Map.of("message", "파일 업로드 실패: " + e.getMessage()));
+        }
     }
 
     /**
