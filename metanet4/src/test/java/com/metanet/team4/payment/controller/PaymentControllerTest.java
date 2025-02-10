@@ -10,38 +10,31 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.MethodParameter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.metanet.team4.common.CommonLoginTestConfig;
-import com.metanet.team4.common.Login;
 import com.metanet.team4.jwt.JwtAuthenticationFilter;
-import com.metanet.team4.member.model.Member;
+import com.metanet.team4.payment.dao.IReservatoinRepository;
 import com.metanet.team4.payment.model.PaymentRequestDto;
-import com.metanet.team4.payment.model.PaymentResponseDto;
-import com.metanet.team4.payment.service.PaymentService;
+import com.metanet.team4.payment.model.Reservation;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
 @Import(CommonLoginTestConfig.class)
 class PaymentControllerTest {
 
     @MockBean
-    private PaymentService paymentService;
+    private IReservatoinRepository reservationRepository; 
+    // ↑ Service가 주입받는 Repository를 Mock 처리
 
     @MockBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -57,17 +50,19 @@ class PaymentControllerTest {
         requestDto.setPaymentAmount(10000);
         requestDto.setTicketType("일반");
 
-        PaymentResponseDto responseDto = new PaymentResponseDto();
-        responseDto.setStatus("SUCCESS");
-        responseDto.setReceiptId("receipt123");
-
-        Mockito.when(paymentService.processPayment(any(PaymentRequestDto.class), any(Member.class)))
-               .thenReturn(responseDto);
+        // repository Mock 동작 지정: insertReservation(...)이 호출되면, 
+        // 인자로 들어온 reservation에 ID를 세팅해주는 식으로 가정 (DB Auto-Increment를 흉내)
+        Mockito.doAnswer(invocation -> {
+            // 첫 번째 파라미터(Reservation)를 꺼냄
+            var reservationArg = invocation.getArgument(0, Reservation.class);
+             reservationArg.setId(999L);
+            return null;
+        }).when(reservationRepository).insertReservation(any());
 
         // when & then
         mockMvc.perform(post("/payment")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk());
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(requestDto)))
+            .andExpect(status().isOk());
     }
 }
