@@ -23,6 +23,5 @@ public class Reservation {
     
     private Long memberId;	// 멤버ID
     private Long playingId; // 상영ID
-    private Long seatId; 	// 좌석ID
     
 }

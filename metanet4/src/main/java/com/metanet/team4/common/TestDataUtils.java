@@ -58,7 +58,7 @@ public class TestDataUtils {
     	
     	reservation.setMemberId(member.getId());
     	reservation.setPlayingId(1L);
-    	reservation.setSeatId(1L); // Todo 생성하고 넣는걸로 수정 해야함
+//    	reservation.setSeatId(1L); // Todo 생성하고 넣는걸로 수정 해야함
     	
     	reservationRepository.insertReservation(reservation);
     	

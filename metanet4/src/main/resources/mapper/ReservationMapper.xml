@@ -14,8 +14,7 @@
 	        TICKET_STATUS, 
 	        RECEIPT_ID, 
 	        MEMBER_ID, 
-	        PLAYING_ID, 
-	        SEAT_ID
+	        PLAYING_ID
 	    FROM RESERVATION
 	    WHERE MEMBER_ID = #{userId} 
 	   		AND ID = #{reservationId}
@@ -35,8 +34,7 @@
 	        TICKET_STATUS, 
 	        RECEIPT_ID, 
 	        MEMBER_ID, 
-	        PLAYING_ID, 
-	        SEAT_ID
+	        PLAYING_ID
 	    ) VALUES (
 	        #{id},
 	        #{reservationCode}, 
@@ -46,8 +44,7 @@
 	        #{ticketStatus}, 
 	        #{receiptId}, 
 	        #{memberId}, 
-	        #{playingId}, 
-	        #{seatId}
+	        #{playingId}
 	    )
 	</insert>
 
@@ -62,7 +59,6 @@
             p.end_time           AS endTime,
             c.name               AS cinemaName,
             sc.name              AS screenName,
-            st.name              AS seatName,
             r.ticket_type        AS ticketType,
             r.reservation_code   AS reservationCode
         FROM Reservation r
@@ -70,7 +66,6 @@
              JOIN screen sc  ON p.screen_id = sc.id
              JOIN cinema c   ON sc.cinema_id = c.id
              JOIN movie m    ON p.movie_id = m.id
-             JOIN seat st    ON r.seat_id = st.id
         WHERE r.id = #{reservationId}
     </select>
 
