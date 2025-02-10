@@ -7,4 +7,5 @@ public class Seat {
 	private Long id;
 	private String name;
 	private Long screenId;
+	private Long reservationId;
 }
