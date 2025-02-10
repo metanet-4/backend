@@ -41,7 +41,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // ✅ 정적 리소스 허용 (JavaScript, CSS, 이미지)
                 .requestMatchers("/js/**", "/css/**", "/images/**", "/favicon.ico").permitAll()
-                
+                .requestMatchers( "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 // ✅ 인증 없이 접근 가능한 API 추가
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
                 .requestMatchers("/auth/send-code", "/auth/verify-code").permitAll() // ✅ 이메일 인증 API 허용
