@@ -68,18 +68,16 @@ public class AdminController {
     /**
      * ✅ 관리자가 우대 여부 승인 (is_discounted = 1로 변경)
      */
-    @PutMapping("/users/{userId}/approve-discount")
+    @PutMapping("/users/{userId}/discount-status")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> approveDiscount(@PathVariable String userId, @RequestBody Map<String, String> request) {
-        System.out.println("🟢 [AdminController] 승인 API 호출됨 - User ID: " + userId);
+    public ResponseEntity<String> updateDiscountStatus(@PathVariable String userId, @RequestBody Map<String, Integer> request) {
+        int status = request.get("status"); // 1(승인) 또는 0(거절)
         
-        boolean success = adminService.approveDiscount(userId);
+        boolean success = adminService.updateDiscountStatus(userId, status);
         if (success) {
-            System.out.println("✅ [AdminController] 승인 완료");
-            return ResponseEntity.ok("우대 여부가 승인되었습니다.");
+            return ResponseEntity.ok(status == 1 ? "우대 여부가 승인되었습니다." : "우대 여부가 거절되었습니다.");
         } else {
-            System.out.println("❌ [AdminController] 승인 실패");
-            return ResponseEntity.badRequest().body("승인 실패");
+            return ResponseEntity.badRequest().body("처리 실패");
         }
     }
 

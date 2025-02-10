@@ -71,10 +71,10 @@ public class AdminService {
     }
 
     /**
-     * ✅ 관리자가 우대 여부 승인 (is_discounted = 1로 변경)
+     * ✅ 우대 여부 변경 (승인: 1, 거절: 0)
      */
-    public boolean approveDiscount(String userId) {
-        int updatedRows = memberMapper.approveDiscount(userId);
+    public boolean updateDiscountStatus(String userId, int status) {
+        int updatedRows = memberMapper.updateDiscountStatus(userId, status);
         return updatedRows > 0; // 성공 여부 반환
     }
 
