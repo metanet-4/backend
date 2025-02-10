@@ -2,16 +2,12 @@ package com.metanet.team4.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.metanet.team4.member.service.RedisService;
 
 import javax.crypto.SecretKey;
-
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
@@ -29,7 +25,7 @@ public class JwtUtil {
         System.out.println("✅ [JWT] SECRET_KEY 로드 완료");
     }
 
-    private static final long ACCESS_EXPIRATION = 1000 *60*30; // 30분
+    private static final long ACCESS_EXPIRATION = 1000 * 60 * 30; // 30분
     private static final long REFRESH_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7일
 
     /**
@@ -39,9 +35,9 @@ public class JwtUtil {
     	if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("🔴 [오류] JWT 생성 시 userId가 null 또는 빈 값입니다.");
         }
-    	
+
         return Jwts.builder()
-        		.claim("userid", userId)  
+                .setSubject(userId)  // ✅ setSubject()로 사용자 ID 저장
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION))
@@ -52,10 +48,9 @@ public class JwtUtil {
     /**
      * ✅ Refresh Token 생성
      */
-    public String generateRefreshToken(String userId,String role) {
+    public String generateRefreshToken(String userId) {
         String refreshToken = Jwts.builder()
-        		.claim("userid", userId)
-        		.claim("role", role)
+                .setSubject(userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
@@ -92,9 +87,9 @@ public class JwtUtil {
                     .getBody();
 
             System.out.println("🟢 [JWT 파싱] claims 내용: " + claims);
-            System.out.println("🟢 [JWT 파싱] 추출된 사용자 ID: " + claims.get("userid", String.class));
+            System.out.println("🟢 [JWT 파싱] 추출된 사용자 ID: " + claims.getSubject());
 
-            return claims.get("userid", String.class);  //"userid" 클레임에서 추출
+            return claims.getSubject();  // ✅ `sub`이 자동으로 들어감
         } catch (Exception e) {
             System.out.println("🔴 [extractUserId 오류] " + e.getMessage());
             return null;
@@ -111,17 +106,7 @@ public class JwtUtil {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-
-            System.out.println("🟢 [JWT 파싱] claims 내용: " + claims);
-            String role = claims.get("role", String.class);
-
-            if (role == null) {
-                System.out.println("🔴 [extractRole 오류] role 값이 존재하지 않음 (JWT 생성 시 누락된 가능성)");
-            } else {
-                System.out.println("🟢 [extractRole] 추출된 역할: " + role);
-            }
-
-            return role;
+            return claims.get("role", String.class);
         } catch (Exception e) {
             System.out.println("🔴 [extractRole 오류] " + e.getMessage());
             return null;
@@ -135,7 +120,6 @@ public class JwtUtil {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(SECRET_KEY)
-                    .setAllowedClockSkewSeconds(5)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
@@ -145,19 +129,6 @@ public class JwtUtil {
             return false;
         }
     }
-    /**
-     * ✅ 쿠키에서 Refresh Token 가져오기
-     */
-    public String getRefreshTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) return null;
-
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> "refreshToken".equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
-
 
     /**
      * ✅ Refresh Token 유효성 검증 (Redis 저장된 토큰과 비교)
