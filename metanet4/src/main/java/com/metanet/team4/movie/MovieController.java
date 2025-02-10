@@ -1,13 +1,22 @@
 package com.metanet.team4.movie;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.metanet.team4.movie.model.Movie;
@@ -15,6 +24,7 @@ import com.metanet.team4.movie.model.MovieDetailResponse;
 import com.metanet.team4.movie.model.MovieMemberForChart;
 import com.metanet.team4.movie.service.IMovieService;
 import com.metanet.team4.movie.service.MovieListService;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -28,7 +38,7 @@ public class MovieController {
 	@Autowired
 	MovieListService movieListService;
 
-	@GetMapping("/{movieId}")
+	@GetMapping("/detail/{movieId}")
 	public MovieDetailResponse MovieDetail(@PathVariable("movieId") String movieId) {
 		Movie movie = movieService.selectMovie(movieId);
 		MovieMemberForChart movieMemberForChart = movieService.countForChart(movieId);
@@ -36,7 +46,7 @@ public class MovieController {
 	    return new MovieDetailResponse(movie, movieMemberForChart, isLiked);
 	}
 	
-	@PostMapping("/{movieId}")
+	@PostMapping("/detail/{movieId}")
     public ResponseEntity<String> toggleLike(@PathVariable String movieId) {
         String memberId="aaa";
 		boolean isLiked = movieService.isLiked(memberId, movieId);
@@ -49,6 +59,28 @@ public class MovieController {
         }
     }
 	
+	@GetMapping("/proxy-image")
+	public ResponseEntity<byte[]> proxyImage(@RequestParam String url) throws IOException {
+	    URL imageUrl = new URL(url);
+	    InputStream in = imageUrl.openStream();
+	    
+	    // InputStream을 byte[]로 변환
+	    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	    byte[] temp = new byte[1024];
+	    int bytesRead;
+	    
+	    while ((bytesRead = in.read(temp)) != -1) {
+	        buffer.write(temp, 0, bytesRead);
+	    }
+	    
+	    byte[] imageBytes = buffer.toByteArray();
+
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.IMAGE_JPEG);
+	    headers.setContentDisposition(ContentDisposition.attachment().build());
+
+	    return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+	}
 
 	@GetMapping("/likeList")
 	public List<Movie> getLikedMovies() {
