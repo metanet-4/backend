@@ -21,4 +21,5 @@ public class SeatResponseDto {
 	
 	private String screenName;
 	private String type;
+	private String movieId;
 }
