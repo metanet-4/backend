@@ -1,19 +1,18 @@
 package com.metanet.team4.member.service;
 
-import com.metanet.team4.member.dto.MemberUpdateRequest;
-import com.metanet.team4.member.mapper.MemberMapper;
-import com.metanet.team4.member.model.Member;
-import lombok.RequiredArgsConstructor;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import com.metanet.team4.member.dto.MemberUpdateRequest;
+import com.metanet.team4.member.mapper.MemberMapper;
+import com.metanet.team4.member.model.Member;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
