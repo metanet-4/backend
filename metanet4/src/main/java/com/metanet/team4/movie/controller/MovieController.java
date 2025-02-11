@@ -1,4 +1,4 @@
-package com.metanet.team4.movie;
+package com.metanet.team4.movie.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.metanet.team4.common.Login;
+import com.metanet.team4.member.model.Member;
 import com.metanet.team4.movie.model.Movie;
 import com.metanet.team4.movie.model.MovieDetailResponse;
 import com.metanet.team4.movie.model.MovieMemberForChart;
@@ -28,7 +30,6 @@ import com.metanet.team4.movie.service.MovieListService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/movie")
 @Tag(name="Movie", description="movie detail page")
 public class MovieController {
 	
@@ -38,28 +39,27 @@ public class MovieController {
 	@Autowired
 	MovieListService movieListService;
 
-	@GetMapping("/detail/{movieId}")
-	public MovieDetailResponse MovieDetail(@PathVariable("movieId") String movieId) {
+	@GetMapping("/movie/detail/{movieId}")
+	public MovieDetailResponse movieDetail(@PathVariable("movieId") String movieId, @Login Member member) {
 		Movie movie = movieService.selectMovie(movieId);
 		MovieMemberForChart movieMemberForChart = movieService.countForChart(movieId);
-		Boolean isLiked = movieService.isLiked("aaa", movieId);
+		Boolean isLiked = movieService.isLiked(member.getUserId(), movieId);
 	    return new MovieDetailResponse(movie, movieMemberForChart, isLiked);
 	}
 	
-	@PostMapping("/detail/{movieId}")
-    public ResponseEntity<String> toggleLike(@PathVariable String movieId) {
-        String memberId="aaa";
-		boolean isLiked = movieService.isLiked(memberId, movieId);
+	@PostMapping("/movie/detail/{movieId}")
+    public ResponseEntity<String> toggleLike(@PathVariable String movieId, @Login Member member) {
+		boolean isLiked = movieService.isLiked(member.getUserId(), movieId);
         if (isLiked) {
-            movieService.removeLike(memberId, movieId);
+            movieService.removeLike(member.getUserId(), movieId);
             return ResponseEntity.ok("좋아요 취소됨");
         } else {
-            movieService.addLike(memberId, movieId);
+            movieService.addLike(member.getUserId(), movieId);
             return ResponseEntity.ok("좋아요 추가됨");
         }
     }
 	
-	@GetMapping("/proxy-image")
+	@GetMapping("/movie/proxy-image")
 	public ResponseEntity<byte[]> proxyImage(@RequestParam String url) throws IOException {
 	    URL imageUrl = new URL(url);
 	    InputStream in = imageUrl.openStream();
@@ -83,27 +83,26 @@ public class MovieController {
 	}
 
 	@GetMapping("/likeList")
-	public List<Movie> getLikedMovies() {
-		String memberId="aaa";
-		List<Movie> movies = movieService.getLikedMovies(memberId);
+	public List<Movie> getLikedMovies(@Login Member member) {
+		List<Movie> movies = movieService.getLikedMovies(member.getUserId());
 		return movies;
 	}
-	@GetMapping("/boxoffice")
+	@GetMapping("/movie/boxoffice")
     public List<Movie> getBoxOfficeMovies() {
         return movieListService.getBoxOfficeMovies();
     }
 
-    @GetMapping("/comingsoon")
+    @GetMapping("/movie/comingsoon")
     public List<Movie> getComingSoonMovies() {
         return movieListService.getComingSoonMovies();
     }
     
-    @GetMapping("/search/{keyword}")
+    @GetMapping("/movie/search/{keyword}")
     public List<Movie> getSearchMovies(@PathVariable String keyword){
     	return movieListService.getSearchMovies(keyword);
     }
     
-    @GetMapping("/search/{keyword}/count")
+    @GetMapping("/movie/search/{keyword}/count")
     public int getSearchMoviesCount(@PathVariable String keyword) {
         return movieListService.getCachedSearchMoviesCount(keyword);
     }
