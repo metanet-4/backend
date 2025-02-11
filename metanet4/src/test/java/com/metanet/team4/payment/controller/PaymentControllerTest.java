@@ -58,6 +58,7 @@ class PaymentControllerTest {
         requestDto.setReceiptId("receipt123");
         requestDto.setPaymentAmount(10000);
         requestDto.setTicketType("일반");
+        requestDto.setSeatNames("E3, E4, E5");
 
         // when & then
         mockMvc.perform(post("/payment")

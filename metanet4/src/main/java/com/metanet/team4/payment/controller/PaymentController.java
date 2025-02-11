@@ -19,6 +19,7 @@ import com.metanet.team4.websocket.WebSocketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,7 +34,7 @@ public class PaymentController {
     @Operation(summary = "결제 요청", description = "사용자가 결제를 요청하면 승인 결과를 반환합니다.")
     @PostMapping
     public ResponseEntity<PaymentResponseDto> requestPayment(
-            @Parameter(description = "결제 요청 정보", required = true) @RequestBody PaymentRequestDto request,
+            @Parameter(description = "결제 요청 정보", required = true) @Valid @RequestBody PaymentRequestDto request,
             @Parameter(hidden = true) @Login Member member) {
     	PaymentResponseDto payment = paymentService.processPayment(request, member); 
     	if(payment != null) {
