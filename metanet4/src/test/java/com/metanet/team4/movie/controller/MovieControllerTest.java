@@ -99,7 +99,7 @@ public class MovieControllerTest {
 	
 	@Test
     void getLikedMoviesTest() throws Exception {
-        mockMvc.perform(get("/movie/likeList")
+        mockMvc.perform(get("/likeList")
                 .cookie(new Cookie("jwt", token))) // JWT 토큰 포함
                 .andExpect(status().isOk()); // HTTP 200 응답 확인
 	}
