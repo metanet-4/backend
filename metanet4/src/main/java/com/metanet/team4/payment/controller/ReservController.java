@@ -26,21 +26,21 @@ public class ReservController {
 
     private final ReservService reservService;
 
-    @Operation(summary = "예매 상세 조회", description = "예매 ID를 기반으로 예매 상세 정보를 조회합니다.")
-    @GetMapping("/{reservationId}")
+    @Operation(summary = "예매 상세 조회", description = "예매번호(reservationCode)를 기반으로 예매 상세 정보를 조회합니다.")
+    @GetMapping("/{reservationCode}")
     public ResponseEntity<ReservationDetailDto> getReservationDetail(
-            @Parameter(description = "예매 ID", required = true) @PathVariable Long reservationId,
+            @Parameter(description = "예매 ID", required = true) @PathVariable Long reservationCode,
             @Parameter(hidden = true) @Login Member member) {
-        ReservationDetailDto response = reservService.getReservationDetail(member.getId(), reservationId);
+        ReservationDetailDto response = reservService.getReservationDetail(member.getId(), reservationCode);
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "예매 취소", description = "예매 ID를 입력하여 해당 예매를 취소합니다.")
-    @PatchMapping("/{reservationId}/cancel")
+    @PatchMapping("/{reservationCode}/cancel")
     public ResponseEntity<CancelResponseDto> cancelPayment(
-            @Parameter(description = "예매 ID", required = true) @PathVariable Long reservationId,
+            @Parameter(description = "예매 ID", required = true) @PathVariable Long reservationCode,
             @Parameter(hidden = true) @Login Member member) {
-        CancelResponseDto response = reservService.cancelReservation(member.getId(), reservationId);
+        CancelResponseDto response = reservService.cancelReservation(member.getId(), reservationCode);
         return ResponseEntity.ok(response);
     }
 }

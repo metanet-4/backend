@@ -20,39 +20,39 @@ public class ReservService {
 	private final IReservatoinRepository repository;
 	
 	@Transactional
-    public ReservationDetailDto getReservationDetail(Long userId, Long reservationId) {
-        log.info("예약 상세 조회 요청: userId={}, reservationId={}", userId, reservationId);
+    public ReservationDetailDto getReservationDetail(Long userId, Long reservationCode) {
+        log.info("예약 상세 조회 요청: userId={}, reservationCode={}", userId, reservationCode);
         
-		Reservation reservation = repository.getReservationByUserIdAndId(userId, reservationId);
+		Reservation reservation = repository.getReservationByUserIdAndCode(userId, reservationCode);
         if (reservation == null) {
-            log.warn("예약 정보 없음: userId={}, reservationId={}", userId, reservationId);
-            throw new NotFoundException("해당 예약 정보를 찾을 수 없습니다. reservationId: " + reservationId);
+            log.warn("예약 정보 없음: userId={}, reservationCode={}", userId, reservationCode);
+            throw new NotFoundException("해당 예약 정보를 찾을 수 없습니다. reservationCode: " + reservationCode);
         }
 
-        ReservationDetailDto reservationDetailDto = repository.getReservationDetail(reservationId);
+        ReservationDetailDto reservationDetailDto = repository.getReservationDetail(reservation.getId());
         reservationDetailDto.setSeatList(reservation.getSeatList());
 
-        log.info("예약 상세 조회 완료: reservationId={}, seatCount={}", reservationId, reservationDetailDto.getSeatList().size());
+        log.info("예약 상세 조회 완료: reservationId={}, seatCount={}", reservation.getId(), reservationDetailDto.getSeatList().size());
         return reservationDetailDto;
     }
     
     @Transactional
-    public CancelResponseDto cancelReservation(Long userId, Long reservationId) {
-        log.info("예약 취소 요청: userId={}, reservationId={}", userId, reservationId);
+    public CancelResponseDto cancelReservation(Long userId, Long reservationCode) {
+        log.info("예약 취소 요청: userId={}, reservationCode={}", userId, reservationCode);
     	
-        Reservation reservation = repository.getReservationByUserIdAndId(userId, reservationId);
+        Reservation reservation = repository.getReservationByUserIdAndCode(userId, reservationCode);
         if (reservation == null) {
-            log.warn("취소할 예약 정보 없음: userId={}, reservationId={}", userId, reservationId);
-            throw new NotFoundException("해당 예약 정보를 찾을 수 없습니다. reservationId: " + reservationId);
+            log.warn("취소할 예약 정보 없음: userId={}, reservationCode={}", userId, reservationCode);
+            throw new NotFoundException("해당 예약 정보를 찾을 수 없습니다. reservationCode: " + reservationCode);
         }
     	
-        int updatedRows = repository.updateTicketStatus(reservationId, 0);
+        int updatedRows = repository.updateTicketStatus(reservation.getId(), 0);
         if (updatedRows == 0) {
-            log.error("예약 취소 실패: reservationId={}", reservationId);
+            log.error("예약 취소 실패: reservationId={}", reservation.getId());
             throw new RuntimeException("예약 취소 처리 중 오류가 발생했습니다.");
         }
 
-        log.info("예약 취소 성공: reservationId={}", reservationId);
+        log.info("예약 취소 성공: reservationId={}", reservation.getId());
         return new CancelResponseDto("CANCELED", "예매 취소 성공!");
     }
 }
