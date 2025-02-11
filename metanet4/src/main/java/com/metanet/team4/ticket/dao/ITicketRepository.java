@@ -106,7 +106,8 @@ public interface ITicketRepository {
                 TO_CHAR(p.start_time, 'HH24:MI') || ' ~ ' || 
                 TO_CHAR(p.end_time, 'HH24:MI') || ')' AS playingTime,
                 c.name AS cinemaName,
-                sc.name AS screenName
+                sc.name AS screenName,
+                m.main_image AS movieImg
             FROM playing p
             JOIN movie m ON p.movie_id = m.id
             JOIN screen sc ON p.screen_id = sc.id
