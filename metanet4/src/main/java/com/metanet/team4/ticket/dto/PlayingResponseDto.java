@@ -13,4 +13,5 @@ public class PlayingResponseDto {
     private String playingTime;  // 상영 시간 (날짜 + 시작시간 ~ 종료시간)
     private String cinemaName;   // 영화관 이름
     private String screenName;   // 상영관 이름
+    private String movieImg; 	 // 영화 메인 사진
 }
