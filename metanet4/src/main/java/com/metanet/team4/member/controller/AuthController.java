@@ -2,8 +2,14 @@ package com.metanet.team4.member.controller;
 
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.dto.LoginRequest;
 import com.metanet.team4.member.dto.SignupRequest;
@@ -73,14 +79,42 @@ public class AuthController {
      * ✅ 회원가입 API
      */
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@ModelAttribute SignupRequest request) {
+    public ResponseEntity<Map<String, String>> signup(
+            @RequestParam String userId,
+            @RequestParam String name,
+            @RequestParam String password,
+            @RequestParam String password2,
+            @RequestParam String phone,
+            @RequestParam String email,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date birthday, // ✅ Date 타입으로 변경
+            @RequestParam Integer gender, // ✅ Integer 타입으로 변경
+            @RequestParam(required = false) MultipartFile disabilityCertificate) { // ✅ 파일 필드는 MultipartFile
+
+        Map<String, String> response = new HashMap<>();
         try {
+            // ✅ DTO 객체 생성
+            SignupRequest request = new SignupRequest();
+            request.setUserId(userId);
+            request.setName(name);
+            request.setPassword(password);
+            request.setPassword2(password2);
+            request.setPhone(phone);
+            request.setEmail(email);
+            request.setBirthday(birthday);
+            request.setGender(gender);
+            request.setDisabilityCertificate(disabilityCertificate);
+
             memberService.registerUser(request);
-            return ResponseEntity.ok("회원가입이 완료되었습니다.");
+            response.put("message", "회원가입이 완료되었습니다.");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
+
+
+
 
     /**
      * ✅ 로그인 (Access Token + Refresh Token 발급)

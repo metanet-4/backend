@@ -45,6 +45,7 @@ public class SecurityConfig {
                 // ✅ 인증 없이 접근 가능한 API 추가
                 .requestMatchers("/", "/auth/signup", "/auth/login", "/auth/logout", "/auth/check", "/auth/refresh").permitAll()
                 .requestMatchers("/auth/send-code", "/auth/verify-code").permitAll() // ✅ 이메일 인증 API 허용
+                .requestMatchers("/auth/check-userId", "/auth/check-phone").permitAll()
                 .requestMatchers("/health", "/health/db").permitAll()
                 .requestMatchers("/movie/**").permitAll()
                 .requestMatchers("/ticket/**").permitAll()
