@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 public class MypageMember {
+	private int id;
 	private String userId;
 	private String name;
 	private String email;

@@ -1,39 +1,49 @@
 package com.metanet.team4.mypage.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.metanet.team4.common.CommonLoginTestConfig;
-import com.metanet.team4.jwt.JwtAuthenticationFilter;
-import com.metanet.team4.mypage.dao.IMypageRepository;
-import com.metanet.team4.mypage.model.MypageMember;
+import com.metanet.team4.common.LoginResponseDto;
+import com.metanet.team4.common.TestDataUtils;
+import com.metanet.team4.member.model.Member;
+
+import jakarta.servlet.http.Cookie;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(CommonLoginTestConfig.class)
+@Transactional
 public class MypageControllerTest {
 
-	@MockBean
-	private IMypageRepository mypageRepository;
+	@Autowired
+	private MockMvc mockMvc;
 	
-	@MockBean
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
 	@Autowired
-	private ObjectMapper objectMapper;
+	private TestDataUtils testDataUtils;
+	
+	private String token;
+	private Member member;
+	private String userid;
+	
+	@BeforeEach
+	void beforeEach() {
+		LoginResponseDto loginResponseDto = testDataUtils.getLoginAccessToken();
+    	token = loginResponseDto.getToken();
+    	member = loginResponseDto.getMember();
+	}
 	
 	@Test
 	void getMypageMemberTest() throws Exception {
-		MypageMember mypageMember = new MypageMember();
-		mypageMember.setName("테스트회원");
-		mypageMember.setGender(1);
-		
-		Mockito.when(mypageRepository.getMypageMember("aaa"));
+		mockMvc.perform(get("/mypage")
+			.cookie(new Cookie("jwt", token)))
+			.andExpect(status().isOk());
 	}
 }

@@ -24,6 +24,7 @@ public class MypageRepository implements IMypageRepository {
 		@Override
 		public MypageMember mapRow(ResultSet rs, int rowNum) throws SQLException {
 			MypageMember mypageMember = new MypageMember();
+			mypageMember.setId(rs.getInt("id"));
 			mypageMember.setUserId(rs.getString("user_id"));
 			mypageMember.setName(rs.getString("name"));
 			mypageMember.setEmail(rs.getString("email"));
@@ -68,7 +69,7 @@ public class MypageRepository implements IMypageRepository {
 	
 	@Override
 	public MypageMember getMypageMember(String memberId) {
-		String sql="select user_id, name, email, birthday, image, gender "
+		String sql="select id, user_id, name, email, birthday, image, gender "
 				+ "from member where user_id=?";
 		return jdbcTemplate.queryForObject(sql, new MypageMemberMapper(), memberId);
 	}
