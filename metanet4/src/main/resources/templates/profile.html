@@ -6,6 +6,10 @@
 </head>
 <body>
     <h1>사용자 프로필</h1>
+
+    <!-- ✅ 프로필 사진 표시 -->
+    <h2>프로필 사진</h2>
+    <img id="profileImage" src="" alt="등록된 프로필 사진이 없습니다." width="150" height="150">
     
     <p><strong>아이디:</strong> <span th:text="${member.userId}"></span></p>
     <p><strong>이름:</strong> <span th:text="${member.name}"></span></p>
@@ -18,12 +22,16 @@
     <p><strong>생년월일:</strong> <span th:text="${member.birthday}"></span></p>
 
     <h2>장애인 인증서</h2>
-    <p>
-        <span th:if="${disabilityCertificate == null}">등록된 인증서가 없습니다.</span>
-        <a th:if="${disabilityCertificate != null}" href="/user/certificate">
-            <button>인증서 보기</button>
-        </a>
-    </p>
+    <p id="certificateMessage" style="color: red;"></p>
+    <button id="viewCertificateButton" onclick="loadCertificate()">인증서 보기</button>
+
+    <!-- ✅ 모달창 (큰 이미지 보기) -->
+    <div id="certificateModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center;">
+        <div class="modal-content" style="position: relative; background-color: white; width: 60%; text-align: center;">
+            <span class="close" style="position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer;" onclick="closeModal()">&times;</span>
+            <img id="modalCertificateImage" style="width: 100%; max-height: 80vh;" alt="장애인 인증서">
+        </div>
+    </div>
 
     <h2>설정</h2>
     <a href="/user/updateInfo"><button>회원 정보 수정</button></a>
@@ -31,5 +39,77 @@
 
     <br><br>
     <a href="/"><button>홈으로 이동</button></a>
+
+    <script>
+        function getJwtToken() {
+            const cookies = document.cookie.split("; ");
+            for (let cookie of cookies) {
+                if (cookie.startsWith("jwt=")) {
+                    return cookie.split("=")[1];
+                }
+            }
+            return "";
+        }
+
+        // ✅ 프로필 사진 로드
+        function loadProfileImage() {
+            fetch("/user/profile-pic", {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${getJwtToken()}` },
+                credentials: "include"
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("프로필 사진이 없습니다.");
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                if (blob.size > 0) {
+                    document.getElementById("profileImage").src = URL.createObjectURL(blob);
+                }
+            })
+            .catch(error => {
+                console.log("프로필 사진 없음:", error);
+            });
+        }
+
+        function loadCertificate() {
+            fetch("/user/certificate", {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${getJwtToken()}` },
+                credentials: "include"
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("장애인 인증서가 없습니다.");
+                }
+                return response.blob();  // ✅ BLOB 데이터를 가져옴
+            })
+            .then(blob => {
+                let imageUrl = URL.createObjectURL(blob);  // ✅ BLOB을 URL로 변환
+                document.getElementById("modalCertificateImage").src = imageUrl;
+                document.getElementById("certificateModal").style.display = "flex";
+            })
+            .catch(error => {
+                console.error("장애인 인증서 조회 실패:", error);
+                alert("장애인 인증서를 불러올 수 없습니다.");
+            });
+        }
+
+
+        function showModal() {
+            document.getElementById("certificateModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("certificateModal").style.display = "none";
+        }
+
+        // ✅ 페이지 로드 시 프로필 사진 가져오기
+        window.onload = function() {
+            loadProfileImage();
+        };
+    </script>
 </body>
 </html>

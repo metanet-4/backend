@@ -36,6 +36,9 @@ public interface MemberMapper {
 
     // ✅ 사용자 비밀번호 변경
     void updatePassword(@Param("userId") String userId, @Param("password") String password);
+    
+    // ✅ 프로필 사진 조회 (BLOB 데이터 처리)
+    InputStream getProfilePic(@Param("userId") String userId);
 
     // ✅ 사용자 프로필 사진 변경 (BLOB 데이터 처리)
     void updateProfilePic(@Param("userId") String userId, @Param("image") byte[] image);
