@@ -4,7 +4,7 @@
 
 <mapper namespace="com.metanet.team4.payment.dao.IReservatoinRepository">
 	
-	<select id="getReservationByUserIdAndId" parameterType="map" resultMap="reservationResultMap">
+	<select id="getReservationByUserIdAndCode" parameterType="map" resultMap="reservationResultMap">
 	    SELECT 
 	        r.ID, 
 	        r.RESERVATION_CODE, 
@@ -22,7 +22,7 @@
 	    FROM RESERVATION r
 	    LEFT JOIN SEAT s ON r.ID = s.RESERVATION_ID
 	    WHERE r.MEMBER_ID = #{userId} 
-	      AND r.ID = #{reservationId}
+	      AND r.reservation_code = #{reservationCode}
 	</select>
 	
 	<resultMap id="reservationResultMap" type="com.metanet.team4.payment.model.Reservation">

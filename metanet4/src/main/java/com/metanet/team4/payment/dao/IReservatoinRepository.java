@@ -14,7 +14,7 @@ public interface IReservatoinRepository {
 	
     ReservationDetailDto getReservationDetail(Long reservationId);
     
-    Reservation getReservationByUserIdAndId(Long userId, Long reservationId);
+    Reservation getReservationByUserIdAndCode(Long userId, Long reservationCode);
     
     int updateTicketStatus(Long reservationId, Integer ticketStatus);
 }
