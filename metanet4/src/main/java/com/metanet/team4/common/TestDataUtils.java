@@ -62,7 +62,7 @@ public class TestDataUtils {
     	
     	reservationRepository.insertReservation(reservation);
     	
-        return reservation.getId();
+        return reservation.getReservationCode();
     }
 
     private static Long generateUniqueReservationCode() {

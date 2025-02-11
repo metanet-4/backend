@@ -38,14 +38,14 @@ class ReservControllerTest {
     
     private String token;
     private Member member;
-    private Long reservationId;
+    private Long reservationCode;
     
     @BeforeEach
     void beforeEach() {
     	LoginResponseDto loginResponseDto = testDataUtils.getLoginAccessToken();
     	token = loginResponseDto.getToken();
     	member = loginResponseDto.getMember();
-    	reservationId = testDataUtils.insertReservation(member);
+    	reservationCode = testDataUtils.insertReservation(member);
     }
 
     @Test
@@ -53,7 +53,7 @@ class ReservControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(get("/ticket/{reservationId}", reservationId)
+        mockMvc.perform(get("/ticket/{reservationCode}", reservationCode)
         		.cookie(new Cookie("jwt", token)))
                .andExpect(status().isOk());
     }
@@ -63,7 +63,7 @@ class ReservControllerTest {
         // given
 
         // when & then
-        mockMvc.perform(patch("/ticket/{reservationId}/cancel", reservationId)
+        mockMvc.perform(patch("/ticket/{reservationCode}/cancel", reservationCode)
         		.cookie(new Cookie("jwt", token)))
                .andExpect(status().isOk());
     }

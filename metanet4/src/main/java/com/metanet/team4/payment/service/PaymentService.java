@@ -3,7 +3,7 @@ package com.metanet.team4.payment.service;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.metanet.team4.exception.CustomException;
-import com.metanet.team4.exception.NotFoundException;
 import com.metanet.team4.member.model.Member;
 import com.metanet.team4.payment.dao.IReservatoinRepository;
 import com.metanet.team4.payment.model.PaymentRequestDto;
@@ -85,7 +84,8 @@ public class PaymentService {
     }
 
     private static Long generateUniqueReservationCode() {
-        return Math.abs(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE);
+        Random random = new Random();
+        return 10000000L + random.nextInt(90000000); // 10000000 ~ 99999999 범위
     }
 
     private List<Seat> parseSeatNames(String seatNames, Long playingId, Long reservationId) {
