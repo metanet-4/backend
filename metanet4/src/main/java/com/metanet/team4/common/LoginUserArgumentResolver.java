@@ -8,6 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.metanet.team4.exception.NotFoundException;
 import com.metanet.team4.jwt.JwtAuthenticationFilter;
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.mapper.MemberMapper;
@@ -35,13 +36,11 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		String token = jwtTokenProvider.getJwtFromCookies((HttpServletRequest) webRequest.getNativeRequest());
-		System.out.println("token : " + token);
 		String userId = jwtUtil.extractUserId(token);
 		Member member = memberMapper.findByUserId(userId);
 		if (member == null) {
-		    throw new IllegalArgumentException("해당 userId를 가진 사용자가 존재하지 않습니다.");
+		    throw new NotFoundException("해당 userId를 가진 사용자가 존재하지 않습니다.");
 		}
-		System.out.println("Member : " + member);
 		return member;
 	}
 }
