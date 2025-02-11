@@ -57,8 +57,9 @@ public class TicketController {
 		
 	}
 	
-	// 3-1. 좌석 상태
+	// 3. 좌석 상태
 	@GetMapping("/seats")
+	@Operation(summary="좌석 조회", description="상영관의 좌석을 조회")
 	public ResponseEntity<List<SeatResponseDto>> getSeatList(
 			@RequestParam Long playingId){
 		
@@ -66,9 +67,10 @@ public class TicketController {
 		return ResponseEntity.status(HttpStatus.OK).body(list);
 	}
 	
-	// 3-2. 상영관 선택 후 좌석 선택하는 로직
+	// 4. 티켓 정보 조회
 	@GetMapping("/seats/info")
-	public ResponseEntity<List<TicketResponseDto>> postSeatInfo(@RequestBody TicketRequestDto ticketRequestDto){
+	@Operation(summary="티켓 조회", description="티켓 발행에 필요한 정보들을 조회")
+	public ResponseEntity<List<TicketResponseDto>> postTicketInfo(@RequestBody TicketRequestDto ticketRequestDto){
 		List<TimeDto> timeList = ticketService.getTimeDtoList(ticketRequestDto.getPlayingId());
 		List<TicketResponseDto> ticketList = ticketService.getSeatInfo(ticketRequestDto, timeList);
 		return ResponseEntity.status(HttpStatus.OK).body(ticketList);

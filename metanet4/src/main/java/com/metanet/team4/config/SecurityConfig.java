@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/send-code", "/auth/verify-code").permitAll() // ✅ 이메일 인증 API 허용
                 .requestMatchers("/health", "/health/db").permitAll()
                 .requestMatchers("/movie/**").permitAll()
+                .requestMatchers("/ticket/**").permitAll()
 
                 // ✅ OPTIONS 요청을 명시적으로 허용 (CORS 문제 해결)
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
