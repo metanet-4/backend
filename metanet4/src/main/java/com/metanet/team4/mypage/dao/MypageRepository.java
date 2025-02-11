@@ -76,56 +76,59 @@ public class MypageRepository implements IMypageRepository {
 
 	@Override
 	public List<ReserveList> getReserveList(String memberId) {
-		String sql = "SELECT "
-				+ "    m.user_id AS userId, "
-				+ "	   mv.id AS movieId, "
-				+ "    r.ticket_status AS ticketStatus, "
-				+ "    mv.krName AS movieTitle, "
-				+ "    mv.main_image AS mainImage, "
-				+ "    p.start_time AS startTime, "
-				+ "    c.name AS cinemaName, "
-				+ "    s.name AS screenName, "
-				+ "    st.name AS seatName, "
-				+ "    r.reservation_code AS reservationCode, "
-				+ "    r.reservation_time AS reservationTime, "
-				+ "    r.payment_amount AS paymentAmount "
-				+ "FROM reservation r "
-				+ "JOIN member m ON r.member_id = m.id "
-				+ "JOIN playing p ON r.playing_id = p.id "
-				+ "JOIN movie mv ON p.movie_id = mv.id "
-				+ "JOIN screen s ON p.screen_id = s.id "
-				+ "JOIN cinema c ON s.cinema_id = c.id "
-				+ "JOIN seat st ON r.seat_id = st.id "
-				+ "WHERE m.user_id = ? and r.ticket_status=1";
-		return jdbcTemplate.query(sql, new ReserveListMapper(), memberId);
+	    String sql = "SELECT "
+	            + "    m.user_id AS userId, "
+	            + "    mv.id AS movieId, "
+	            + "    r.ticket_status AS ticketStatus, "
+	            + "    mv.krName AS movieTitle, "
+	            + "    mv.main_image AS mainImage, "
+	            + "    p.start_time AS startTime, "
+	            + "    c.name AS cinemaName, "
+	            + "    s.name AS screenName, "
+	            // 예약에 해당하는 좌석 이름들을 쉼표로 연결하여 가져옴 (Oracle의 LISTAGG 함수 사용)
+	            + "    (SELECT LISTAGG(name, ', ') WITHIN GROUP (ORDER BY name) "
+	            + "       FROM seat "
+	            + "      WHERE reservation_id = r.id) AS seatName, "
+	            + "    r.reservation_code AS reservationCode, "
+	            + "    r.reservation_time AS reservationTime, "
+	            + "    r.payment_amount AS paymentAmount "
+	            + "FROM reservation r "
+	            + "JOIN member m ON r.member_id = m.id "
+	            + "JOIN playing p ON r.playing_id = p.id "
+	            + "JOIN movie mv ON p.movie_id = mv.id "
+	            + "JOIN screen s ON p.screen_id = s.id "
+	            + "JOIN cinema c ON s.cinema_id = c.id "
+	            + "WHERE m.user_id = ? and r.ticket_status = 1";
+	    return jdbcTemplate.query(sql, new ReserveListMapper(), memberId);
 	}
 
 	@Override
 	public List<ReserveList> getCancelList(String memberId) {
-		String sql = "SELECT "
-				+ "    m.user_id AS userId, "
-				+ "	   mv.id AS movieId, "
-				+ "    r.ticket_status AS ticketStatus, "
-				+ "    mv.krName AS movieTitle, "
-				+ "    mv.main_image AS mainImage, "
-				+ "    p.start_time AS startTime, "
-				+ "    c.name AS cinemaName, "
-				+ "    s.name AS screenName, "
-				+ "    st.name AS seatName, "
-				+ "    r.reservation_code AS reservationCode, "
-				+ "    r.reservation_time AS reservationTime, "
-				+ "    r.payment_amount AS paymentAmount "
-				+ "FROM reservation r "
-				+ "JOIN member m ON r.member_id = m.id "
-				+ "JOIN playing p ON r.playing_id = p.id "
-				+ "JOIN movie mv ON p.movie_id = mv.id "
-				+ "JOIN screen s ON p.screen_id = s.id "
-				+ "JOIN cinema c ON s.cinema_id = c.id "
-				+ "JOIN seat st ON r.seat_id = st.id "
-				+ "WHERE m.user_id = ? and r.ticket_status=0";
-		return jdbcTemplate.query(sql, new ReserveListMapper(), memberId);
+	    String sql = "SELECT "
+	            + "    m.user_id AS userId, "
+	            + "    mv.id AS movieId, "
+	            + "    r.ticket_status AS ticketStatus, "
+	            + "    mv.krName AS movieTitle, "
+	            + "    mv.main_image AS mainImage, "
+	            + "    p.start_time AS startTime, "
+	            + "    c.name AS cinemaName, "
+	            + "    s.name AS screenName, "
+	            // 예약에 해당하는 좌석 이름들을 쉼표로 연결하여 가져옴
+	            + "    (SELECT LISTAGG(name, ', ') WITHIN GROUP (ORDER BY name) "
+	            + "       FROM seat "
+	            + "      WHERE reservation_id = r.id) AS seatName, "
+	            + "    r.reservation_code AS reservationCode, "
+	            + "    r.reservation_time AS reservationTime, "
+	            + "    r.payment_amount AS paymentAmount "
+	            + "FROM reservation r "
+	            + "JOIN member m ON r.member_id = m.id "
+	            + "JOIN playing p ON r.playing_id = p.id "
+	            + "JOIN movie mv ON p.movie_id = mv.id "
+	            + "JOIN screen s ON p.screen_id = s.id "
+	            + "JOIN cinema c ON s.cinema_id = c.id "
+	            + "WHERE m.user_id = ? and r.ticket_status = 0";
+	    return jdbcTemplate.query(sql, new ReserveListMapper(), memberId);
 	}
-	
 
 
 
