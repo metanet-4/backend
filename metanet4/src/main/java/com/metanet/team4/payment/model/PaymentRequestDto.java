@@ -14,4 +14,5 @@ public class PaymentRequestDto {
 	
 	private Integer paymentAmount;
     private String ticketType; // 티켓 유형 (일반, 청소년 등)
+    private String seatNames; // 좌석 정보(E3, E4)
 }

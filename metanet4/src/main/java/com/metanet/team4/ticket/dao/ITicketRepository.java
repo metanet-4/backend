@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import com.metanet.team4.ticket.dto.CinemaFindResponseDto;
+import com.metanet.team4.ticket.dto.PlayingResponseDto;
 import com.metanet.team4.ticket.dto.ScreenFindResponseDto;
 import com.metanet.team4.ticket.dto.SeatResponseDto;
 import com.metanet.team4.ticket.dto.TicketResponseDto;
@@ -97,5 +98,22 @@ public interface ITicketRepository {
 			+ "  AND sc.id = #{screenId}")
 	List<TicketResponseDto> findReserveInfo(Long playingId, Long screenId);
 	
-	
+    @Select("""
+            SELECT 
+                m.krName AS krName,
+                m.watch_grade AS watchGrade,
+                TO_CHAR(p.playing_date, 'YYYY-MM-DD') || ' (' || 
+                TO_CHAR(p.start_time, 'HH24:MI') || ' ~ ' || 
+                TO_CHAR(p.end_time, 'HH24:MI') || ')' AS playingTime,
+                c.name AS cinemaName,
+                sc.name AS screenName
+            FROM playing p
+            JOIN movie m ON p.movie_id = m.id
+            JOIN screen sc ON p.screen_id = sc.id
+            JOIN cinema c ON sc.cinema_id = c.id
+            WHERE p.id = #{playingId}
+        """)
+        PlayingResponseDto findPlayingInfo(Long playingId);
+
+
 }

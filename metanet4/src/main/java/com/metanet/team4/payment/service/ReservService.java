@@ -17,14 +17,20 @@ public class ReservService {
 	private final IReservatoinRepository repository;
 	
 	@Transactional
-    public ReservationDetailDto getReservationDetail(Long reservationId) {
-        return repository.getReservationDetail(reservationId);
+    public ReservationDetailDto getReservationDetail(Long userId, Long reservationId) {
+		Reservation reservation = repository.getReservationByUserIdAndId(userId, reservationId);
+        if (reservation == null) {
+            throw new RuntimeException("해당 예약 정보를 찾을 수 없습니다. reservationId: " + reservationId);
+        }
+        ReservationDetailDto reservationDetailDto = repository.getReservationDetail(reservationId);
+        reservationDetailDto.setSeatList(reservation.getSeatList());
+        return reservationDetailDto;
     }
     
     @Transactional
     public CancelResponseDto cancelReservation(Long userId, Long reservationId) {
     	
-        Reservation reservation = repository.getReervationByUserIdAndId(userId, reservationId);
+        Reservation reservation = repository.getReservationByUserIdAndId(userId, reservationId);
         if (reservation == null) {
             throw new RuntimeException("해당 예약 정보를 찾을 수 없습니다. reservationId: " + reservationId);
         }

@@ -1,6 +1,5 @@
 package com.metanet.team4.ticket.service;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.metanet.team4.ticket.dao.ITicketRepository;
 import com.metanet.team4.ticket.dto.CinemaFindResponseDto;
+import com.metanet.team4.ticket.dto.PlayingResponseDto;
 import com.metanet.team4.ticket.dto.ScreenFindResponseDto;
 import com.metanet.team4.ticket.dto.SeatResponseDto;
 import com.metanet.team4.ticket.dto.TicketRequestDto;
@@ -73,5 +73,9 @@ public class TicketService implements ITicketService{
 	}
 
 
+    @Override
+    public PlayingResponseDto findPlayingInfo(Long playingId) {
+        return iTicketRepository.findPlayingInfo(playingId);
+    }
 
 }

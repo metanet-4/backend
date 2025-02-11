@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.metanet.team4.ticket.dto.CinemaFindResponseDto;
+import com.metanet.team4.ticket.dto.PlayingResponseDto;
 import com.metanet.team4.ticket.dto.ScreenFindResponseDto;
 import com.metanet.team4.ticket.dto.SeatResponseDto;
 import com.metanet.team4.ticket.dto.TicketRequestDto;
@@ -17,4 +18,5 @@ public interface ITicketService {
 	List<SeatResponseDto> findSeatList(Long playingId);
 	List<TicketResponseDto> getSeatInfo(TicketRequestDto ticketReqeustDto, List<TimeDto> timeList);
 	List<TimeDto> getTimeDtoList(Long id);
+	PlayingResponseDto findPlayingInfo(Long playingId);
 }
