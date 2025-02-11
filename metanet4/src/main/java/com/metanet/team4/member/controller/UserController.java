@@ -2,6 +2,7 @@ package com.metanet.team4.member.controller;
 
 import com.metanet.team4.jwt.JwtUtil;
 import com.metanet.team4.member.dto.MemberUpdateRequest;
+import com.metanet.team4.member.model.Member;
 import com.metanet.team4.member.service.RedisService;
 import com.metanet.team4.member.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,33 @@ public class UserController {
         userService.updateUserInfo(request);
         return ResponseEntity.ok("회원 정보가 성공적으로 수정되었습니다.");
     }
+    
+    @GetMapping("/info")
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
+        String userId = getUserIdFromRequest(request);
+        
+        if (userId == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+
+        Member member = userService.getUserInfo(userId);
+
+        if (member == null) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        }
+
+        Map<String, Object> response = Map.of(
+            "userId", member.getUserId(),
+            "name", member.getName(),
+            "email", member.getEmail(),
+            "gender", member.getGender(),
+            "phone", member.getPhone(),
+            "birthday", member.getBirthday()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
 
     /**
      * ✅ 비밀번호 변경
