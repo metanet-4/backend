@@ -1,6 +1,5 @@
 package com.metanet.team4.ticket.controller;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -10,13 +9,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.metanet.team4.ticket.dto.CinemaFindResponseDto;
+import com.metanet.team4.ticket.dto.PlayingResponseDto;
 import com.metanet.team4.ticket.dto.ScreenFindResponseDto;
 import com.metanet.team4.ticket.dto.SeatResponseDto;
 import com.metanet.team4.ticket.dto.TicketRequestDto;
@@ -74,4 +74,11 @@ public class TicketController {
 		return ResponseEntity.status(HttpStatus.OK).body(ticketList);
 	}
 	
+	//상영 Id로 데이터 조회
+    @GetMapping("/playing/{playingId}")
+    @Operation(summary="상영 정보 조회", description="playingId를 기반으로 영화, 상영시간, 좌석 정보를 조회")
+    public ResponseEntity<PlayingResponseDto> getPlayingInfo(@PathVariable Long playingId) {
+    	PlayingResponseDto response = ticketService.findPlayingInfo(playingId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
