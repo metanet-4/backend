@@ -120,7 +120,7 @@ public class AuthController {
      * ✅ 로그인 (Access Token + Refresh Token 발급)
      */
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         System.out.println("🔹 로그인 요청: " + request.getUserId()); 
 
         if (request.getUserId() == null || request.getUserId().isEmpty()) {
@@ -159,7 +159,11 @@ public class AuthController {
 
         System.out.println("🟢 [로그인 성공] Access Token, Refresh Token을 쿠키에 저장 완료");
 
-        return ResponseEntity.ok(Map.of("message", "로그인 성공"));
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "로그인 성공");
+        responseBody.put("role", role);  // 역할 정보 추가
+
+        return ResponseEntity.ok(responseBody);
     }
 
 

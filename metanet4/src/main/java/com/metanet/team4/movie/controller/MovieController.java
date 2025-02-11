@@ -40,11 +40,16 @@ public class MovieController {
 	MovieListService movieListService;
 
 	@GetMapping("/movie/detail/{movieId}")
-	public MovieDetailResponse movieDetail(@PathVariable("movieId") String movieId, @Login Member member) {
+	public MovieDetailResponse movieDetail(@PathVariable("movieId") String movieId) {
 		Movie movie = movieService.selectMovie(movieId);
 		MovieMemberForChart movieMemberForChart = movieService.countForChart(movieId);
+	    return new MovieDetailResponse(movie, movieMemberForChart);
+	}
+	
+	@GetMapping("/movie/detail/{movieId}/like")
+	public boolean movieLike(@PathVariable("movieId") String movieId, @Login Member member) {
 		Boolean isLiked = movieService.isLiked(member.getUserId(), movieId);
-	    return new MovieDetailResponse(movie, movieMemberForChart, isLiked);
+	    return isLiked;
 	}
 	
 	@PostMapping("/movie/detail/{movieId}")
