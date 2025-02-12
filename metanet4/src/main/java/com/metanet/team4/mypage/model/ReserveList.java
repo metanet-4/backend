@@ -17,7 +17,7 @@ public class ReserveList {
 	private String cinemaName;
 	private String screenName;
 	private String seatName;
-	private int reservationCode;
+	private Long reservationCode;
 	private Date reservationTime;
 	private int paymentAmount;
 }
