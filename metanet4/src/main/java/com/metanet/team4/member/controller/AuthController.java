@@ -124,7 +124,7 @@ public class AuthController {
         System.out.println("🔹 로그인 요청: " + request.getUserId()); 
 
         if (request.getUserId() == null || request.getUserId().isEmpty()) {
-            return ResponseEntity.status(400).body(Map.of("error", "userId가 비어 있습니다."));
+            return ResponseEntity.status(400).body(Map.of("error", "아이디를 입력해주세요."));
         }
 
         Member member = memberService.findByUserId(request.getUserId());

@@ -104,13 +104,18 @@ public class UserController {
 
         try {
             userService.updateProfilePic(userId, file);
-            return ResponseEntity.ok()
-                    .body(Map.of("message", "프로필 사진이 변경되었습니다."));
+
+            // ✅ 확실히 JSON 응답을 반환하도록 수정
+            return ResponseEntity.ok(Map.of(
+                "message", "프로필 사진이 변경되었습니다.",
+                "imageUrl", "/user/profile-pic" // ✅ 변경된 이미지 URL 추가
+            ));
         } catch (IOException e) {
             return ResponseEntity.status(500)
                     .body(Map.of("message", "파일 업로드 실패: " + e.getMessage()));
         }
     }
+
 
     /**
      * ✅ 회원 탈퇴 (Access & Refresh Token 삭제 포함)
@@ -171,6 +176,7 @@ public class UserController {
         }
     }
 
+
     /**
      * ✅ 쿠키에서 JWT 토큰 파싱 → userId 추출
      */
@@ -185,8 +191,9 @@ public class UserController {
                 }
             }
         }
-        throw new RuntimeException("인증된 사용자가 아닙니다.");
+        throw new RuntimeException("🔴 인증된 사용자가 아닙니다. JWT가 유효하지 않거나 누락되었습니다.");
     }
+
 
     /**
      * ✅ 응답에서 쿠키 삭제하는 메서드
