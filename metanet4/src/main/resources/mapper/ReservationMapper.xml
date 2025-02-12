@@ -99,5 +99,16 @@
 	    WHERE ID = #{reservationId}
 	</update>
 
+	<select id="getMovieName" parameterType="Long"
+		resultType="String">
+		SELECT krName
+		FROM movie
+		WHERE id = (
+    		SELECT movie_id
+    		FROM playing
+    		WHERE id = #{playingId}
+		)
+
+	</select>
 	
 </mapper>

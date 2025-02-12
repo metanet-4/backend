@@ -36,6 +36,7 @@ public class PaymentService {
 
     private final IReservatoinRepository reservationRepository;
     private final ISeatRepository seatRepository;
+    
 
     @Transactional
     public PaymentResponseDto processPayment(PaymentRequestDto request, Member member) {
@@ -79,6 +80,9 @@ public class PaymentService {
         PaymentResponseDto response = new PaymentResponseDto();
         response.setReceiptId(request.getReceiptId());
         response.setReservationId(reservation.getId());
+        
+        String movieName = reservationRepository.getMovieName(request.getPlayingId());
+        response.setMovidName(movieName);
 
         return response;
     }
