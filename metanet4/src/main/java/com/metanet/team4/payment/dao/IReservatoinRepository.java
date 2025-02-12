@@ -17,4 +17,6 @@ public interface IReservatoinRepository {
     Reservation getReservationByUserIdAndCode(Long userId, Long reservationCode);
     
     int updateTicketStatus(Long reservationId, Integer ticketStatus);
+    
+    String getMovieName(Long playingId);
 }
