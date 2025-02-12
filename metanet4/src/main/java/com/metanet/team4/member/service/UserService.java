@@ -39,13 +39,13 @@ public class UserService {
         // 기존 회원 정보 조회
         Member existingMember = memberMapper.findByUserId(request.getUserId());
         if (existingMember == null) {
-            throw new RuntimeException("사용자를 찾을 수 없습니다.");
+            throw new RuntimeException("🔴 사용자를 찾을 수 없습니다. userId: " + request.getUserId());
         }
 
         // 비밀번호 변경 여부 확인
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            if (!request.getPassword().equals(request.getPassword2())) {
-                throw new RuntimeException("입력한 비밀번호와 비밀번호 확인이 일치하지 않습니다. 다시 입력해주세요.");
+            if (request.getPassword2() == null || !request.getPassword().equals(request.getPassword2())) {
+                throw new RuntimeException("🔴 입력한 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
             }
             String encodedPassword = passwordEncoder.encode(request.getPassword());
             memberMapper.updatePassword(request.getUserId(), encodedPassword);
@@ -56,6 +56,7 @@ public class UserService {
         existingMember.setEmail(request.getEmail());
         memberMapper.updateMember(existingMember);
     }
+
 
     
     
