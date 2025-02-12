@@ -6,10 +6,8 @@ import lombok.Data;
 public class MovieDetailResponse {
     private Movie movie;
     private MovieMemberForChart movieMemberForChart;
-    private Boolean isLiked;
-    public MovieDetailResponse(Movie movie, MovieMemberForChart movieMemberForChart, Boolean isLiked) {
+    public MovieDetailResponse(Movie movie, MovieMemberForChart movieMemberForChart) {
         this.movie = movie;
         this.movieMemberForChart = movieMemberForChart;
-        this.isLiked = isLiked;
     }
 }
