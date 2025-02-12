@@ -38,7 +38,7 @@ public class PaymentController {
             @Parameter(hidden = true) @Login Member member) {
     	PaymentResponseDto payment = paymentService.processPayment(request, member); 
     	if(payment != null) {
-    		String message = payment.getMovidName() + "영화 예매가 완료되었습니다.";
+    		String message = payment.getMovidName() + " 영화 예매가 완료되었습니다.";
      		webSocketService.sendNotificationToUser(member.getUserId(), message);
     	}
     	

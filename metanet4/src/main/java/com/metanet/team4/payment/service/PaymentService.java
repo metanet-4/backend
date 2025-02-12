@@ -79,7 +79,10 @@ public class PaymentService {
         // 응답 생성
         PaymentResponseDto response = new PaymentResponseDto();
         response.setReceiptId(request.getReceiptId());
+        response.setStatus("SUCCESS");
+        response.setPaidAmount(reservation.getPaymentAmount());
         response.setReservationId(reservation.getId());
+        response.setReservationCode(reservation.getReservationCode());
         
         String movieName = reservationRepository.getMovieName(request.getPlayingId());
         response.setMovidName(movieName);
