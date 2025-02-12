@@ -58,7 +58,7 @@ public class MypageRepository implements IMypageRepository {
 	        reserveList.setCinemaName(rs.getString("cinemaName"));
 	        reserveList.setScreenName(rs.getString("screenName"));
 	        reserveList.setSeatName(rs.getString("seatName"));
-	        reserveList.setReservationCode(rs.getInt("reservationCode"));
+	        reserveList.setReservationCode(rs.getLong("reservationCode"));
 	        reserveList.setReservationTime(rs.getDate("reservationTime"));
 	        reserveList.setPaymentAmount(rs.getInt("paymentAmount"));
 	        return reserveList;
