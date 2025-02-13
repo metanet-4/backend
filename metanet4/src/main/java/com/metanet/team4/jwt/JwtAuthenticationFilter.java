@@ -59,10 +59,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     Cookie accessTokenCookie = new Cookie("jwt", newAccessToken);
                     accessTokenCookie.setHttpOnly(true);
-                    accessTokenCookie.setSecure(request.isSecure());
+                    accessTokenCookie.setSecure(true); 
                     accessTokenCookie.setPath("/");
                     accessTokenCookie.setMaxAge(30 * 60);
+                    accessTokenCookie.setAttribute("SameSite", "None");
+
                     response.addCookie(accessTokenCookie);
+
 
                     log.info("[JWT 필터] 새 Access Token을 쿠키에 저장 완료");
 
