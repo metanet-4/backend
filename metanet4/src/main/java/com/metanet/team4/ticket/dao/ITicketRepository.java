@@ -56,23 +56,23 @@ public interface ITicketRepository {
 		List<ScreenFindResponseDto> findPlayingListByCinemaId(Long cinemaId, String movieId);
 	
 	// 좌석 정보 가져오는 SQL
-	@Select("select"
-			+ " s.id as seatId, "
-			+ " s.name as name, "
-			+ " p.id as playingId,"
-			+ " m.krname as krName,"
-			+ " m.watch_grade as watchGrade,"
-			+ " p.start_time as startTime,"
-			+ " c.name as cinemaName, "
-			+ " sc.name as screenName,"
-			+ " sc.type as type, "
-			+ " m.id as movieId "
-			+ "from seat s "
-			+ "join playing p on p.id = s.playing_id "
-			+ "join screen sc on sc.id = p.screen_id "
-			+ "join movie m on m.id = p.movie_id "
-			+ "join cinema c on c.id = sc.cinema_id "
-			+ "where s.playing_id = #{playingId}")
+	@Select("SELECT \n"
+			+ "    s.id AS seatId,\n"
+			+ "    s.name AS name,\n"
+			+ "    p.id AS playingId,\n"
+			+ "    m.krname AS krName,\n"
+			+ "    m.watch_grade AS watchGrade,\n"
+			+ "    p.start_time AS startTime,\n"
+			+ "    c.name AS cinemaName, \n"
+			+ "    sc.name AS screenName,\n"
+			+ "    sc.type AS type,\n"
+			+ "    m.id AS movieId\n"
+			+ "FROM playing p\n"
+			+ "LEFT JOIN seat s ON p.id = s.playing_id\n"
+			+ "JOIN screen sc ON p.screen_id = sc.id\n"
+			+ "JOIN movie m ON p.movie_id = m.id\n"
+			+ "JOIN cinema c ON sc.cinema_id = c.id\n"
+			+ "WHERE p.id = #{playingId}")
 	List<SeatResponseDto> findSeatList(Long playingId);
 	
 	// 상영 시간 정보 가져오는 SQL
