@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
 				.allowedOrigins("http://localhost:3000", "https://bhntheatre.netlify.app")
 				.allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
 				.allowedHeaders("*")
-				.exposedHeaders("Set-Cookie")
+	            .exposedHeaders("Set-Cookie", "Authorization")
 				.allowCredentials(true);
 	}
 
