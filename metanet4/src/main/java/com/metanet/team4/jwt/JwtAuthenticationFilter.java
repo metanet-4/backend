@@ -54,10 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String role = jwtUtil.extractRole(refreshToken);
                     String newAccessToken = jwtUtil.generateToken(userId, role);
 
-                    // ✅ 새 Access Token을 쿠키에 저장
                     Cookie accessTokenCookie = new Cookie("jwt", newAccessToken);
                     accessTokenCookie.setHttpOnly(true);
-                    accessTokenCookie.setSecure(true);
+                    // 요청이 HTTPS이면 secure, 그렇지 않으면 false
+                    accessTokenCookie.setSecure(request.isSecure());
                     accessTokenCookie.setPath("/");
                     accessTokenCookie.setMaxAge(30 * 60);
                     response.addCookie(accessTokenCookie);
