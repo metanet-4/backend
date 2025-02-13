@@ -21,3 +21,4 @@ public class ReserveList {
 	private Date reservationTime;
 	private int paymentAmount;
 }
+	

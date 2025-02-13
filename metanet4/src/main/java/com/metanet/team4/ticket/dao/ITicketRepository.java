@@ -27,7 +27,7 @@ public interface ITicketRepository {
 
 	// 상영 정보를 가져오는 SQL
 	@Select("SELECT \n"
-			+ "	   p.movie_id as movieId,\n"
+			+ "    p.movie_id as movieId,\n"
 			+ "    p.id AS playingId, \n"
 			+ "    p.playing_date AS playingDate, \n"
 			+ "    p.start_time AS startTime,\n"
@@ -45,6 +45,11 @@ public interface ITicketRepository {
 			+ "WHERE p.movie_id = #{movieId}\n"
 			+ "  AND s.cinema_id = #{cinemaId}\n"
 			+ "  AND p.playing_date BETWEEN TRUNC(SYSDATE) AND TRUNC(SYSDATE + 6)\n"
+			+ "  AND (\n"
+			+ "       TRUNC(p.playing_date) > TRUNC(SYSDATE)\n"
+			+ "       OR (TRUNC(p.playing_date) = TRUNC(SYSDATE)\n"
+			+ "           AND TO_CHAR(p.start_time, 'HH24MI') > TO_CHAR(SYSDATE + 9/24, 'HH24MI'))\n"
+			+ "  )\n"
 			+ "GROUP BY \n"
 			+ "    p.id, p.playing_date, p.start_time, p.end_time, p.screen_id, p.movie_id,\n"
 			+ "    c.id, c.name, s.name, s.capacity, s.type")
