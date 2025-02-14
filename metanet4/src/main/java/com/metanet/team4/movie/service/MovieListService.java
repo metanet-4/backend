@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,14 @@ public class MovieListService implements IMovieListService{
 
     // 박스오피스 목록 반환
     @Override
+    @Cacheable(value = "getBoxOfficeCache", cacheManager = "redisCacheManager")
     public List<Movie> getBoxOfficeMovies() {
         return movieListMapper.getBoxOfficeMovies();
     }
 
     // 상영예정작 목록 반환
     @Override
+    @Cacheable(value = "getComingSoonCache", cacheManager = "redisCacheManager")
     public List<Movie> getComingSoonMovies() {
         return movieListMapper.getComingSoonMovies();
     }
