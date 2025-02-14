@@ -29,7 +29,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/ticket")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @Tag(name ="Ticket", description="Ticket Reservation API")
 public class TicketController {
 
