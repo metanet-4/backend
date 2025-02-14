@@ -138,7 +138,7 @@ public class AuthController {
         String accessToken = jwtUtil.generateToken(member.getUserId(), role);
         String refreshToken = jwtUtil.generateRefreshToken(member.getUserId(),role);
 
-        // ✅ Access Token을 HttpOnly 쿠키에 저장
+        // Access Token 쿠키
         Cookie accessTokenCookie = new Cookie("jwt", accessToken);
         accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(true);
@@ -146,15 +146,17 @@ public class AuthController {
         accessTokenCookie.setMaxAge(30 * 60);
         response.addCookie(accessTokenCookie);
 
-        // ✅ Refresh Token도 쿠키에 저장
+        // Refresh Token 쿠키
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);  // 7일
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(refreshTokenCookie);
+        
+        response.setHeader("Set-Cookie", "jwt=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=None");
 
-        // ✅ Refresh Token을 Redis에도 저장 (보안을 위해)
+        // Refresh Token을 Redis에도 저장 (보안을 위해)
         redisService.saveRefreshToken(member.getUserId(), refreshToken);
 
         System.out.println("🟢 [로그인 성공] Access Token, Refresh Token을 쿠키에 저장 완료");
