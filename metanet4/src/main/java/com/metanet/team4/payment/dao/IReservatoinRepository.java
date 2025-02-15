@@ -19,4 +19,6 @@ public interface IReservatoinRepository {
     int updateTicketStatus(Long reservationId, Integer ticketStatus);
     
     String getMovieName(Long playingId);
+    
+    void deleteSeat(Long reservationCode);
 }
