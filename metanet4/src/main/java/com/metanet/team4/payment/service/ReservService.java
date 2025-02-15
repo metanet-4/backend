@@ -51,6 +51,8 @@ public class ReservService {
             log.error("예약 취소 실패: reservationId={}", reservation.getId());
             throw new RuntimeException("예약 취소 처리 중 오류가 발생했습니다.");
         }
+        
+        repository.deleteSeat(reservationCode);
 
         log.info("예약 취소 성공: reservationId={}", reservation.getId());
         return new CancelResponseDto("CANCELED", "예매 취소 성공!");

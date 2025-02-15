@@ -111,4 +111,12 @@
 
 	</select>
 	
+	<delete id="deleteSeat" parameterType="Long">
+		DELETE FROM Seat
+		WHERE reservation_id = (
+    	SELECT id FROM reservation
+    	WHERE reservation_code = #{reservationCode})
+
+	</delete>
+	
 </mapper>
