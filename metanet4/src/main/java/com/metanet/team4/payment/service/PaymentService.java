@@ -88,7 +88,7 @@ public class PaymentService {
                 RLock lock = redissonClient.getLock(lockKey);
                 try {
                     // 락 획득: 최대 10초 기다리고, 획득하면 10초 동안 유지 (필요에 따라 시간 조정)
-                    if (!lock.tryLock(10, 10, TimeUnit.SECONDS)) {
+                    if (!lock.tryLock(10, 180, TimeUnit.SECONDS)) {
                         throw new CustomException("해당 좌석(" + seat.getName() + ")에 대한 락을 획득하지 못했습니다.", HttpStatus.CONFLICT);
                     }
                     // 좌석 INSERT
